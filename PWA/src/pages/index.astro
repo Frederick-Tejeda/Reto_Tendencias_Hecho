@@ -1,0 +1,13 @@
+---
+import Counter from "../components/Counter.jsx";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+	<main>
+		<h1>My Astro + React PWA</h1>
+		<p>This part is pre-rendered HTML.</p>
+
+		<Counter client:load />
+	</main>
+</Layout>

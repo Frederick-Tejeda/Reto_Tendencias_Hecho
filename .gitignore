@@ -141,3 +141,40 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+/* */
+# build output
+./Reto_Tendencias_Hecho/PWA/dist/
+./Reto_Tendencias_Hecho/Servidor/dist/
+
+# generated types
+./Reto_Tendencias_Hecho/PWA/.astro/
+
+# dependencies
+./Reto_Tendencias_Hecho/PWA/node_modules/
+./Reto_Tendencias_Hecho/Servidor/node_modules/
+
+# logs
+./Reto_Tendencias_Hecho/PWA/npm-debug.log*
+./Reto_Tendencias_Hecho/Servidor/npm-debug.log*
+./Reto_Tendencias_Hecho/PWA/yarn-debug.log*
+./Reto_Tendencias_Hecho/Servidor/yarn-debug.log*
+./Reto_Tendencias_Hecho/PWA/yarn-error.log*
+./Reto_Tendencias_Hecho/Servidor/yarn-error.log*
+./Reto_Tendencias_Hecho/PWA/pnpm-debug.log*
+./Reto_Tendencias_Hecho/Servidor/pnpm-debug.log*
+
+# environment variables
+./Reto_Tendencias_Hecho/PWA/.env
+./Reto_Tendencias_Hecho/Servidor/.env
+./Reto_Tendencias_Hecho/PWA/.env.production
+./Reto_Tendencias_Hecho/Servidor/.env.production
+
+# macOS-specific files
+./Reto_Tendencias_Hecho/PWA/.DS_Store
+./Reto_Tendencias_Hecho/Servidor/.DS_Store
+
+# jetbrains setting folder
+./Reto_Tendencias_Hecho/PWA/.idea/
+./Reto_Tendencias_Hecho/Servidor/.idea/
+
