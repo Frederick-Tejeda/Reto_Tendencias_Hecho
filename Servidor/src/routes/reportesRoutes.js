@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router();
 const reportesController = require('../controllers/reportesController');
 const { verificarToken, verificarRol } = require('../middlewares/authMiddleware');
+const { registrarAuditoria } = require('../middlewares/trazabilidadMiddleware'); // Importar Trazabilidad
 
 router.use(verificarToken);
 
-// Endpoint: GET /api/v1/reportes/dashboard
-router.get(
-    '/dashboard', 
-    verificarRol(['Administrador', 'Auditor', 'Supervisor', 'Consulta']), 
-    reportesController.obtenerDashboardInventario
-);
+// Dashboard (Solo lectura, no requiere registro de auditoría transaccional)
+router.get('/dashboard/summary', reportesController.obtenerDashboard);
 
-// Endpoint: GET /api/v1/reportes/tickets
-router.get(
-    '/tickets', 
-    verificarRol(['Administrador', 'Auditor', 'Consulta']), 
-    reportesController.obtenerReporteTickets
+// Reportes (Solo lectura)
+router.get('/reports/general', reportesController.generarReporteGeneral);
+
+// Cierre Diario (Requiere auditoría por ser un proceso de consolidación)
+router.post(
+    '/reports/daily-close', 
+    verificarRol(['Administrador', 'Supervisor', 'Despachador']), 
+    registrarAuditoria('EJECUTAR_CIERRE_DIARIO', 'cierres_diarios'), // Inyección del Middleware RF-21
+    reportesController.generarCierreDiario
 );
 
 module.exports = router;

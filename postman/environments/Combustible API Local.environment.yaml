@@ -3,4 +3,8 @@ values:
   - key: base_url
     value: ''
   - key: token
+    secret: true
+  - key: departamentoId
+    value: ''
+  - key: ticketUuid
     value: ''

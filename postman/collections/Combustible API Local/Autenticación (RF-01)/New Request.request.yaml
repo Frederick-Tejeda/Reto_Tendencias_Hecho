@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "email": "admin_intec",
+        "password": "Intec2026*"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 200) {
+          var jsonData = pm.response.json();
+          pm.environment.set("token", jsonData.token);
+      }
+    language: text/javascript
+order: 1789938772976
