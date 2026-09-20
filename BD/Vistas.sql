@@ -1,19 +1,21 @@
         -- 1. Vista de Inventario Actual
 
-CREATE OR REPLACE VIEW vw_dashboard_inventario AS
+CREATE VIEW vw_dashboard_inventario AS
 SELECT 
-    id_tanque,
-    tipo_combustible,
-    existencia_actual,
-    capacidad_maxima,
-    nivel_critico,
-    (existencia_actual / capacidad_maxima) * 100 AS porcentaje_disponible,
+    i.id_tanque,
+    e.nombre AS estacion,
+    i.tipo_combustible,
+    i.existencia_actual,
+    i.capacidad_maxima,
+    i.nivel_critico,
+    (i.existencia_actual / i.capacidad_maxima) * 100 AS porcentaje_disponible,
     CASE 
-        WHEN existencia_actual <= nivel_critico THEN 'Crítico'
-        WHEN (existencia_actual / capacidad_maxima) <= 0.25 THEN 'Bajo'
+        WHEN i.existencia_actual <= i.nivel_critico THEN 'Crítico'
+        WHEN (i.existencia_actual / i.capacidad_maxima) <= 0.25 THEN 'Bajo'
         ELSE 'Óptimo'
     END AS estado_alerta
-FROM inventario;
+FROM inventario i
+JOIN estaciones e ON i.id_estacion = e.id_estacion;
 
         -- 2. Vista de Resumen de Tickets
 

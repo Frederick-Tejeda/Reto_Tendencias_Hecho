@@ -1,0 +1,6 @@
+name: Combustible API Local
+values:
+  - key: base_url
+    value: ''
+  - key: token
+    value: ''

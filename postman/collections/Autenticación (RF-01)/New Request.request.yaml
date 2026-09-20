@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "username": "admin_intec",
+        "password": "Intec2026*"
+    }
+order: 1789933796033

@@ -1,6 +1,23 @@
-import app from './app.js'
-import './db.js'
+const app = require('./src/app');
+require('dotenv').config();
+const db = require('./src/config/db');
 
-const server = () => app.listen(app.get('PORT'), () => console.log(`Servidor corriendo en el puerto ${app.get('PORT')}`))
+const PORT = process.env.PORT || 3000;
 
-server()
+// 1. Probamos la conexión a la base de datos ANTES de levantar el servidor HTTP
+db.pool.connect()
+    .then(client => {
+        console.log('✅ Conexión exitosa a la base de datos PostgreSQL.');
+        client.release(); // Liberamos el cliente de vuelta al pool
+        
+        // 2. Levantamos el servidor
+        app.listen(PORT, () => {
+            console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
+            console.log(`🔍 Verifica el estado en: http://localhost:${PORT}/api/v1/health`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ Error fatal: No se pudo conectar a la base de datos PostgreSQL.', err.stack);
+        // Si no hay base de datos, matamos el proceso (Fail-fast)
+        process.exit(1); 
+    });
