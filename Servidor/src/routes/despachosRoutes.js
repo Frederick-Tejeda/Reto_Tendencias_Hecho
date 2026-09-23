@@ -5,9 +5,8 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 
 router.use(verificarToken);
 
-// Endpoint: POST /api/v1/despachos/validar-qr
 router.post(
-    '/validar-qr', 
+    '/', 
     verificarRol(['Despachador', 'Administrador']), 
     despachosController.registrarDespacho
 );

@@ -63,10 +63,19 @@ const generarReporteGeneral = async (req, res) => {
         `;
         const params = [];
 
+        // Filtros originales
         if (startDate) { params.push(startDate); query += ` AND t.fecha_creacion >= $${params.length}`; }
         if (endDate) { params.push(endDate); query += ` AND t.fecha_creacion <= $${params.length}`; }
         if (departmentId) { params.push(departmentId); query += ` AND t.id_departamento = $${params.length}`; }
         if (status) { params.push(status); query += ` AND t.estado = $${params.length}`; }
+
+        // Filtros faltantes integrados
+        if (employeeCode) { params.push(employeeCode); query += ` AND e.codigo_empleado = $${params.length}`; }
+        if (internalCode) { params.push(internalCode); query += ` AND v.ficha_interna = $${params.length}`; }
+        if (fuelType) { params.push(fuelType); query += ` AND t.tipo_combustible = $${params.length}`; }
+
+        // Ordenamiento por defecto para que el reporte sea legible
+        query += ` ORDER BY t.fecha_creacion DESC`;
 
         const result = await db.query(query, params);
 
@@ -98,6 +107,7 @@ const generarReporteGeneral = async (req, res) => {
         // Retorno JSON genérico si no se especifica Excel
         res.status(200).json({ success: true, data: result.rows });
     } catch (error) {
+        console.error('Error al generar reporte:', error);
         res.status(500).json({ success: false, message: 'Error al generar reporte' });
     }
 };

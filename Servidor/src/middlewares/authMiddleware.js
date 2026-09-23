@@ -6,7 +6,7 @@ const verificarToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Formato: "Bearer <token>"
 
     if (!token) {
-        return res.status(403).json({ error: 'Se requiere un token de autenticación.' });
+        return res.status(401).json({ error: 'Se requiere un token de autenticación.' });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {

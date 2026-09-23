@@ -2,79 +2,6 @@ const db = require('../config/db');
 const crypto = require('crypto');
 
 // ==========================================
-// 3.1 Crear Solicitudes
-// ==========================================
-const crearSolicitud = async (req, res) => {
-    const { employeeId, vehicleId, departmentId, authorizedQuantityGal, fuelType, requestType, requestDate, expirationDate, recurrence } = req.body;
-    
-    // Si es recurrente, el estado inicial podría ser "Programada", de lo contrario "Pendiente Aprobación"
-    const estadoInicial = requestType === 'Recurrente' ? 'Programada' : 'Pendiente Aprobación';
-
-    try {
-        const result = await db.query(
-            `INSERT INTO solicitudes 
-            (id_empleado, id_vehiculo, id_departamento, cantidad_autorizada, tipo_combustible, tipo_solicitud, fecha_solicitud, fecha_vencimiento, estado, frecuencia, dia_semana, fecha_inicio_recurrencia, fecha_fin_recurrencia) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id_solicitud`,
-            [
-                employeeId, vehicleId, departmentId, authorizedQuantityGal, fuelType, requestType, requestDate, expirationDate, estadoInicial,
-                recurrence?.frequency || null, recurrence?.dayOfWeek || null, recurrence?.startDate || null, recurrence?.endDate || null
-            ]
-        );
-
-        res.status(201).json({ 
-            success: true, 
-            data: { requestId: result.rows[0].id_solicitud, status: estadoInicial } 
-        });
-    } catch (error) {
-        console.error('Error al crear solicitud:', error);
-        res.status(500).json({ success: false, message: 'Error al crear la solicitud' });
-    }
-};
-
-// ==========================================
-// 3.2 Listar Solicitudes
-// ==========================================
-const listarSolicitudes = async (req, res) => {
-    try {
-        const result = await db.query(`
-            SELECT 
-                s.id_solicitud as "requestId", 
-                e.nombre_completo as "employeeName", 
-                v.ficha_interna as "vehicleCode", 
-                s.fecha_solicitud as "requestDate", 
-                s.estado as status
-            FROM solicitudes s
-            JOIN empleados e ON s.id_empleado = e.id_empleado
-            JOIN vehiculos v ON s.id_vehiculo = v.id_vehiculo
-            ORDER BY s.id_solicitud DESC
-        `);
-
-        res.status(200).json({ success: true, data: result.rows });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error al listar solicitudes' });
-    }
-};
-
-// ==========================================
-// 3.3 Procesamiento de Asignaciones Automáticas
-// ==========================================
-const procesarAsignacionesAutomaticas = async (req, res) => {
-    const { executionDate } = req.body;
-    try {
-        // En un escenario real, aquí se buscarían las solicitudes recurrentes cuyo día coincida con executionDate,
-        // se clonarían como solicitudes "Pendiente Aprobación" y se sumarían los galones.
-        // Para cumplir con el contrato mock del JSON de respuesta:
-        
-        res.status(200).json({ 
-            success: true, 
-            data: { ticketsGenerated: 24, gallonsAllocated: 350.0 } 
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error al procesar asignaciones' });
-    }
-};
-
-// ==========================================
 // 3.4 Aprobación y Emisión de Ticket Digital
 // ==========================================
 const emitirTicket = async (req, res) => {
@@ -173,8 +100,15 @@ const anularTicket = async (req, res) => {
     const { reason } = req.body; // Motivo para la auditoría
     
     try {
-        // En una app real de producción aquí extraes el usuario logueado del req.user.id_usuario
-        const idUsuarioLogueado = 1; 
+        const idUsuarioLogueado = req.usuario?.id || req.usuario?.id_usuario;
+
+        // Validación de seguridad por si el token no contenía el ID
+        if (!idUsuarioLogueado) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'No autorizado. No se pudo identificar al usuario en la sesión.' 
+            });
+        }
 
         // Invocamos el procedimiento almacenado que ya creamos en pasos anteriores
         await db.query(`CALL anular_ticket($1, $2, $3)`, [uuid, idUsuarioLogueado, reason]);
@@ -186,9 +120,6 @@ const anularTicket = async (req, res) => {
 };
 
 module.exports = {
-    crearSolicitud,
-    listarSolicitudes,
-    procesarAsignacionesAutomaticas,
     emitirTicket,
     listarTickets,
     anularTicket

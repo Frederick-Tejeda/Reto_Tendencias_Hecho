@@ -5,18 +5,28 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 
 router.use(verificarToken);
 
-// Endpoint: POST /api/v1/inventario/recepcion
 router.post(
-    '/recepcion', 
+    '/receive', 
     verificarRol(['Administrador', 'Supervisor']), 
     inventarioController.registrarRecepcion
 );
 
-// Endpoint: POST /api/v1/inventario/ajuste
 router.post(
-    '/ajuste', 
+    '/adjust', 
     verificarRol(['Administrador', 'Auditor']), 
-    inventarioController.registrarAjuste
+    inventarioController.ajustarInventario
+);
+
+router.get(
+    '/status', 
+    verificarRol(['Administrador', 'Supervisor', 'Auditor']), 
+    inventarioController.consultarEstadoInventario
+);
+
+router.get(
+    '/movements', 
+    verificarRol(['Administrador', 'Supervisor', 'Auditor']), 
+    inventarioController.listarMovimientos
 );
 
 module.exports = router;

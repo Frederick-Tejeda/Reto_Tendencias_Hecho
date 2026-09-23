@@ -13,6 +13,13 @@ router.post(
     solicitudesController.crearSolicitud
 );
 
+// Crear solicitud: Permitido para Administradores, Supervisores y Despachadores (o el rol que definas como solicitante operativo)
+router.get(
+    '/', 
+    verificarRol(['Administrador', 'Supervisor', 'Despachador']), 
+    solicitudesController.listarSolicitudes
+);
+
 // Ver solicitudes pendientes: Solo para quienes aprueban
 router.get(
     '/pendientes', 

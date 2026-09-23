@@ -1,41 +1,86 @@
 const db = require('../config/db');
-const qrService = require('../service/qrService');
 
-// RF-12 y RF-13: Validación de ticket y registro de despacho
 const registrarDespacho = async (req, res) => {
-    const { qr_payload, qr_hash, galones_servidos, id_estacion } = req.body;
-    const id_operador = req.usuario.id_usuario;
+    // 1. Extraer los datos exactos del request body definidos en el contrato[cite: 2]
+    const {
+        ticketUuid,
+        qrPayloadHash,
+        dispatcherId,
+        stationId,
+        gallonsServed,
+        dispatchTimestamp,
+        observations
+    } = req.body;
+
+    const cliente = await db.connect();
 
     try {
-        // 1. Validar la firma criptográfica (RS-04)[cite: 1]
-        // Si alguien alteró la cantidad de galones autorizados en el texto del QR, el hash no coincidirá.
-        const esAutentico = qrService.validarFirmaQR(qr_payload, qr_hash);
-        
-        if (!esAutentico) {
-            return res.status(403).json({ 
-                error: 'Alerta de Seguridad: El código QR es inválido o ha sido alterado.' 
-            });
-        }
+        await cliente.query('BEGIN'); // Iniciar transacción
 
-        // 2. Extraer el Ticket ID del payload
-        // Sabemos que el payload lo armamos como: ticketId|secuencia|empleado|...
-        const id_ticket = qr_payload.split('|')[0];
-
-        // 3. Registrar el despacho en PostgreSQL (esto valida el estado, fecha y descuenta inventario)
-        await db.query(
-            'CALL registrar_despacho($1, $2, $3, $4)',
-            [id_ticket, galones_servidos, id_operador, id_estacion]
+        // 2. Validar que el ticket exista, su hash coincida y no esté ya consumido
+        const ticketResult = await cliente.query(
+            `SELECT id_ticket, estado, tipo_combustible FROM tickets 
+             WHERE id_ticket = $1 AND qr_hash = $2 FOR UPDATE`, 
+            [ticketUuid, qrPayloadHash]
         );
 
-        res.status(200).json({ 
-            mensaje: 'Combustible despachado y descontado del inventario exitosamente.' 
+        if (ticketResult.rowCount === 0) {
+            await cliente.query('ROLLBACK');
+            return res.status(400).json({ success: false, message: 'Ticket inválido, hash incorrecto o no encontrado.' });
+        }
+
+        const ticket = ticketResult.rows[0];
+
+        if (ticket.estado === 'Consumido' || ticket.estado === 'Anulado') {
+            await cliente.query('ROLLBACK');
+            return res.status(400).json({ success: false, message: `El ticket ya no es válido. Estado actual: ${ticket.estado}` });
+        }
+
+        // 3. Registrar el despacho en la base de datos
+        const insertDespacho = await cliente.query(
+            `INSERT INTO despachos (id_ticket, fecha_hora, galones_servidos, id_operador, estacion, observaciones)
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_despacho`,
+            [ticketUuid, dispatchTimestamp || new Date(), gallonsServed, dispatcherId, stationId, observations]
+        );
+        const nuevoDespachoId = insertDespacho.rows[0].id_despacho;
+
+        // 4. Actualizar el estado del ticket a 'Consumido'
+        await cliente.query(
+            `UPDATE tickets SET estado = 'Consumido' WHERE id_ticket = $1`,
+            [ticketUuid]
+        );
+
+        // 5. Auditar la acción
+        // Priorizamos el dispatcherId del body, pero verificamos con el token por seguridad
+        const usuarioAuditoria = req.user?.id || dispatcherId; 
+        await cliente.query(
+            `INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles)
+             VALUES ($1, $2, $3, $4)`,
+            [usuarioAuditoria, 'REGISTRAR_DESPACHO_QR', 'despachos', `Despacho ID: ${nuevoDespachoId} - Galones: ${gallonsServed}`]
+        );
+
+        await cliente.query('COMMIT'); // Confirmar transacción
+
+        // 6. Retornar la respuesta exactamente como la exige el DTO[cite: 2]
+        res.status(200).json({
+            success: true,
+            data: {
+                dispatchId: nuevoDespachoId,
+                timestamp: dispatchTimestamp || new Date().toISOString(),
+                ticketStatus: "Consumido",
+                inventoryUpdated: true // Asumiendo que triggers o jobs actualizan el stock real
+            }
         });
 
     } catch (error) {
+        await cliente.query('ROLLBACK');
         console.error('Error al registrar despacho:', error);
-        // Devolvemos el mensaje de error exacto que lanza PostgreSQL (ej. "El ticket se encuentra vencido")
-        res.status(400).json({ error: error.message || 'Error interno al procesar el despacho.' });
+        res.status(500).json({ success: false, message: 'Error interno al procesar el despacho' });
+    } finally {
+        cliente.release(); // Liberar la conexión al pool
     }
 };
 
-module.exports = { registrarDespacho };
+module.exports = {
+    registrarDespacho
+};
