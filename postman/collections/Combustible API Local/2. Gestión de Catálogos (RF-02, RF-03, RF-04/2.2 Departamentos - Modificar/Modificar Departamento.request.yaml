@@ -6,4 +6,8 @@ pathVariables:
 body:
   type: json
   content: '{ "name": "Tecnología y Sistemas" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790200986993

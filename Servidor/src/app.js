@@ -43,7 +43,7 @@ app.use('/api/v1/tickets', ticketsRoutes);
 app.use('/api/v1/dispatch', despachosRoutes);
 app.use('/api/v1/inventory', inventarioRoutes);
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
-app.use('/api/v1/', reportesRoutes);
+app.use('/api/v1', reportesRoutes);
 
 // Ruta de prueba (Healthcheck)
 app.get('/api/v1/health', (req, res) => {

@@ -5,8 +5,8 @@ const { verificarToken } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken); // Asumiendo que requieres auth para todos
 
-router.post('/vehicles', vehiculesController.crearVehiculo);
-router.get('/vehicles', vehiculesController.listarVehiculos);
-router.put('/vehicles/:id', vehiculesController.modificarVehiculo);
+router.post('/', vehiculesController.crearVehiculo);
+router.get('/', vehiculesController.listarVehiculos);
+router.put('/:id', vehiculesController.modificarVehiculo);
 
 module.exports = router;
