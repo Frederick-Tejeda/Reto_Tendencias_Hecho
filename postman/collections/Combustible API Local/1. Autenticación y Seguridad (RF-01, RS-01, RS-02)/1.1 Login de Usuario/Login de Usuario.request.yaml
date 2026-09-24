@@ -4,16 +4,16 @@ method: POST
 body:
   type: json
   content: |-
-    {
-        "email": "admin_intec",
-        "password": "Intec2026*"
+    {     
+        "email": "admin_intec",     
+        "password": "Intec2026*" 
     }
 scripts:
   - type: afterResponse
     code: |-
       if (pm.response.code === 200) {
           var jsonData = pm.response.json();
-          pm.environment.set("token", jsonData.token);
+          pm.environment.set("token", jsonData.data.token);
       }
     language: text/javascript
-order: 1789938772976
+order: 1790177217356

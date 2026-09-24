@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{base_url}}/inventory/receive"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "supplierId": 4,
+        "stationId": 1,
+        "tankId": 2,
+        "invoiceNumber": "F-009988",
+        "documentedVolumeGallons": 5000.0,
+        "receivedVolumeGallons": 4995.5,
+        "receivedAtUtc": "2026-09-13T10:30:00Z",
+        "receivedByUserId": 12,
+        "notes": "Llegó con ligera merma por temperatura"
+    }
+order: 1790202306649

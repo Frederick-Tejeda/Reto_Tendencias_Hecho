@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{base_url}}/admin/users/:id/reset-password"
+method: POST
+pathVariables:
+  id: "2"
+body:
+  type: json
+  content: |-
+    { 
+        "newPassword": "Supervisor", 
+        "requireChangeOnNextLogin":true 
+    }
+order: 1790177705812

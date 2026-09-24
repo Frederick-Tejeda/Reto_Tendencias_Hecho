@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{base_url}}/vehicles/:id"
+method: PUT
+pathVariables:
+  id: ""
+body:
+  type: json
+  content: '{ "odometerKm": 15500, "status": "En Reparación" }'
+order: 1790201415866

@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{base_url}}/employee/:id"
+method: PUT
+pathVariables:
+  id: ""
+body:
+  type: json
+  content: '{ "position": "Lead Developer", "status": "Inactivo" }'
+order: 1790201182291

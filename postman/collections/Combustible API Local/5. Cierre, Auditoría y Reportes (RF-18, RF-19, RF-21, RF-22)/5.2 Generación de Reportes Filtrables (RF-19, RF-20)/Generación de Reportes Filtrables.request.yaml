@@ -1,0 +1,15 @@
+$kind: http-request
+url: |-
+  {{base_url}}/reports/general?startDate=2026-09-01&endDate=2026-09-15&departmentId=1&format=excel&e
+  mployeeCode=EMP-1029&internalCode=V-001&fuelType=Gasoil&status=Creado
+method: GET
+queryParams:
+  startDate: 2026-09-01
+  endDate: 2026-09-15
+  departmentId: "1"
+  format: excel
+  "e\nmployeeCode": EMP-1029
+  internalCode: V-001
+  fuelType: Gasoil
+  status: Creado
+order: 1790202815468

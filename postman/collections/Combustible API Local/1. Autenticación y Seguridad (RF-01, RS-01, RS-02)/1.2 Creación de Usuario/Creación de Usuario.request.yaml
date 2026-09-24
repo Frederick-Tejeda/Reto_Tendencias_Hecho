@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/admin/users"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "role": "Supervisor",
+        "data": {
+            "email": "Supervisor@email.com",
+            "password": "Supervisor",
+            "name": "Nombre Supervisor"
+        }
+    }
+order: 1790177270915

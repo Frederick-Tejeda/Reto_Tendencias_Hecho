@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{base_url}}/vehicles"
+method: GET
+order: 1462510703555141

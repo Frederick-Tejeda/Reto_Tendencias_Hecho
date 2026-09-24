@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{base_url}}/inventory/movements"
+method: GET
+order: 1790202630077

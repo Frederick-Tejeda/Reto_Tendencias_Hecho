@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/admin/users/:id"
+method: PUT
+pathVariables:
+  id: "2"
+body:
+  type: json
+  content: |-
+    {
+        "data": { 
+            "email": "Supervisor@email.com", 
+            "role": "Supervisor" 
+        }
+    }
+order: 1790177350780

@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{base_url}}/tickets?status=Pendiente&employeeId=15"
+method: GET
+queryParams:
+  status: Pendiente
+  employeeId: "15"
+order: 1790201968526

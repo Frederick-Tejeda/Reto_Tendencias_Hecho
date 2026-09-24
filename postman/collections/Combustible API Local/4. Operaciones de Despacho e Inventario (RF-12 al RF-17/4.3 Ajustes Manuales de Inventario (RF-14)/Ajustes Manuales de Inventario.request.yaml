@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{base_url}}/inventory/adjust"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "adjustmentType": "Negativo",
+        "volumeGal": 15.2,
+        "reason": "Merma detectada en medición física",
+        "authorizedBy": 3
+    }
+order: 1790202395628

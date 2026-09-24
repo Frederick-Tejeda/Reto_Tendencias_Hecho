@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{base_url}}/requests"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "employeeId": 15,
+        "vehicleId": 8,
+        "departmentId": 1,
+        "authorizedQuantityGal": 10.5,
+        "fuelType": "Gasoil",
+        "requestType": "Recurrente",
+        "requestDate": "2026-09-13T10:00:00Z",
+        "expirationDate": "2026-10-15T23:59:59Z",
+        "recurrence": {
+            "frequency": "Semanal",
+            "dayOfWeek": 1,
+            "startDate": "2026-09-15T00:00:00Z",
+            "endDate": "2026-12-31T23:59:59Z"
+        }
+    }
+order: 1790201523139

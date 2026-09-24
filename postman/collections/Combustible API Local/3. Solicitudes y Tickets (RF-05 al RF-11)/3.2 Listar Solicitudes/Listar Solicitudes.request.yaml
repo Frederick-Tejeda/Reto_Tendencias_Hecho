@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{base_url}}/requests"
+method: GET
+order: 1790201657861

@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{base_url}}/departments/:id"
+method: PUT
+pathVariables:
+  id: ""
+body:
+  type: json
+  content: '{ "name": "Tecnología y Sistemas" }'
+order: 1790200986993

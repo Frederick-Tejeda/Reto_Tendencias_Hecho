@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{base_url}}/tickets/:uuid/cancel"
+method: PUT
+pathVariables:
+  uuid: ""
+body:
+  type: json
+  content: '{ "reason": "Error en asignación de galones" }'
+order: 1790202091165

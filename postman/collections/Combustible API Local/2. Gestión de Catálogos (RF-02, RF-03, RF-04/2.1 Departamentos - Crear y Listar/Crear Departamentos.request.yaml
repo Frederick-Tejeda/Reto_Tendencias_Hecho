@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/departments"
+method: POST
+body:
+  type: json
+  content: |-
+    { 
+        "code": "DPT-TI", 
+        "name": "Tecnología de la Información",
+        "description": "Infraestructura y desarrollo" 
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1790200861330

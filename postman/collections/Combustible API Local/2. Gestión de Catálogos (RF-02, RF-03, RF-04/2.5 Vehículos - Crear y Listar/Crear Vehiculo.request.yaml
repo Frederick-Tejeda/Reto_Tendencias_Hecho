@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{base_url}}/vehicles"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "licensePlate": "L123456",
+        "internalCode": "V-001",
+        "brand": "Toyota",
+        "model": "Hilux",
+        "year": 2024,
+        "type": "Camioneta",
+        "departmentId": 1,
+        "tankCapacityGal": 21.1,
+        "odometerKm": 15000,
+        "status": "Operativo"
+    }
+order: 1790201297995

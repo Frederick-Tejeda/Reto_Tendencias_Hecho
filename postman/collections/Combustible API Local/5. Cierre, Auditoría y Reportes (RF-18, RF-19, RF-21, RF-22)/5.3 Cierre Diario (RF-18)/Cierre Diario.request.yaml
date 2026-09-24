@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{base_url}}/reports/daily-close"
+method: POST
+body:
+  type: json
+  content: |-
+    { 
+        "date": "2026-09-13", 
+        "dispatcherId": 42 
+    }
+order: 1790202940238
