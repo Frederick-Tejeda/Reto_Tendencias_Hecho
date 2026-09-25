@@ -5,12 +5,12 @@ body:
   type: json
   content: |-
     {
-        "employeeId": 15,
-        "vehicleId": 8,
+        "employeeId": 1,
+        "vehicleId": 1,
         "departmentId": 1,
-        "authorizedQuantityGal": 10.5,
+        "authorizedQuantityGal": 20,
         "fuelType": "Gasoil",
-        "requestType": "Recurrente",
+        "requestType": "Programada",
         "requestDate": "2026-09-13T10:00:00Z",
         "expirationDate": "2026-10-15T23:59:59Z",
         "recurrence": {
@@ -20,4 +20,8 @@ body:
             "endDate": "2026-12-31T23:59:59Z"
         }
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201523139

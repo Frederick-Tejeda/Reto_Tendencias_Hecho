@@ -4,4 +4,8 @@ method: POST
 body:
   type: json
   content: '{ "executionDate": "2026-09-13" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201743550

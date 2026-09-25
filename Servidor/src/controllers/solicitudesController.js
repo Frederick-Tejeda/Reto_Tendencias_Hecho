@@ -16,22 +16,24 @@ const crearSolicitud = async (req, res) => {
 
     try {
         // El estado inicial depende del tipo de solicitud exigido por el DTO
+        const tiposProgramados = ['Programada', 'Recurrente', 'Automática'];
         let estadoInicial = 'Pendiente';
-        if (requestType === 'Recurrente' || requestType === 'Automática') {
+
+        if (tiposProgramados.includes(requestType)) {
             estadoInicial = 'Programada';
         }
 
-        // Extraer valores de recurrencia si existen en el body
+        // 2. Extraer valores de recurrencia flexibilizando la condición
         let frecuencia = null;
         let diaSemana = null;
         let fechaInicio = null;
         let fechaFin = null;
 
-        if (requestType === 'Recurrente' && recurrence) {
-            frecuencia = recurrence.frequency;
-            diaSemana = recurrence.dayOfWeek;
-            fechaInicio = recurrence.startDate;
-            fechaFin = recurrence.endDate;
+        if (tiposProgramados.includes(requestType) && recurrence) {
+            frecuencia = recurrence.frequency || null;
+            diaSemana = recurrence.dayOfWeek || null;
+            fechaInicio = recurrence.startDate || null;
+            fechaFin = recurrence.endDate || null;
         }
 
         const query = `

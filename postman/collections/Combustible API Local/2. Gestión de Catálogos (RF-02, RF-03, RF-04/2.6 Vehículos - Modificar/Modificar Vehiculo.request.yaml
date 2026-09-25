@@ -2,8 +2,12 @@ $kind: http-request
 url: "{{base_url}}/vehicles/:id"
 method: PUT
 pathVariables:
-  id: ""
+  id: "1"
 body:
   type: json
-  content: '{ "odometerKm": 15500, "status": "En Reparación" }'
+  content: '{ "status": "En Reparación" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201415866

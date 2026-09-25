@@ -1,7 +1,11 @@
 $kind: http-request
-url: "{{base_url}}/tickets?status=Pendiente&employeeId=15"
+url: "{{base_url}}/tickets?status=Anulado&employeeId=1"
 method: GET
 queryParams:
-  status: Pendiente
-  employeeId: "15"
+  status: Anulado
+  employeeId: "1"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201968526

@@ -1,4 +1,8 @@
 $kind: http-request
 url: "{{base_url}}/vehicles"
 method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1462510703555141

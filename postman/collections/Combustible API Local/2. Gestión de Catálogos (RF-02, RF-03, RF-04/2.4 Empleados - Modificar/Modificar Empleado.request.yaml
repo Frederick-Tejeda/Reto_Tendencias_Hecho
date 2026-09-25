@@ -1,9 +1,13 @@
 $kind: http-request
-url: "{{base_url}}/employee/:id"
+url: "{{base_url}}/employees/:id"
 method: PUT
 pathVariables:
-  id: ""
+  id: "1"
 body:
   type: json
-  content: '{ "position": "Lead Developer", "status": "Inactivo" }'
+  content: '{ "position": "Lead Developer", "status": "Activo" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201182291

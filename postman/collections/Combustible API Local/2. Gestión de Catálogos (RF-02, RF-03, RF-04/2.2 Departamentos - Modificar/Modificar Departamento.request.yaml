@@ -2,7 +2,9 @@ $kind: http-request
 url: "{{base_url}}/departments/:id"
 method: PUT
 pathVariables:
-  id: ""
+  - key: id
+    value: "1"
+    description: ""
 body:
   type: json
   content: '{ "name": "Tecnología y Sistemas" }'

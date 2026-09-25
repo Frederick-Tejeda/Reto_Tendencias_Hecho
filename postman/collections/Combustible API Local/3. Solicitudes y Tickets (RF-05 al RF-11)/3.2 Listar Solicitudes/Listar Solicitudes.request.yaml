@@ -1,4 +1,8 @@
 $kind: http-request
 url: "{{base_url}}/requests"
 method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201657861

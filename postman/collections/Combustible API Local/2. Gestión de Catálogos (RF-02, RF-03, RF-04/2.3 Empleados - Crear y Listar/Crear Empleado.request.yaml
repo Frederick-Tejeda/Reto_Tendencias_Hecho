@@ -7,11 +7,15 @@ body:
     {
         "employeeCode": "EMP-1029",
         "fullName": "Juan Pérez",
-        "identificationCard": "000-0000000-0",
+        "identificationCard": "402-1234567-8",
         "departmentId": 1,
         "position": "Desarrollador Backend",
         "email": "juan.perez@institucion.edu.do",
         "mobilePhone": "+18095550199",
         "status": "Activo"
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201066379

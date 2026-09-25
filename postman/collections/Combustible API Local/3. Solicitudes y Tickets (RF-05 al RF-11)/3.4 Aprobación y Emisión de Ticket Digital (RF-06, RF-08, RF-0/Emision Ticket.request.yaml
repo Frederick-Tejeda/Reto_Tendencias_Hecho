@@ -3,5 +3,9 @@ url: "{{base_url}}/tickets/issue"
 method: POST
 body:
   type: json
-  content: '{ "requestId": 102, "approvedBy": 3 }'
+  content: '{ "requestId": 4, "approvedBy": 1 }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201870450

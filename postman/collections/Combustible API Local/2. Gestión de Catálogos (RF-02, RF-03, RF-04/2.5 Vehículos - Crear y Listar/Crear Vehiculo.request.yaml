@@ -16,4 +16,8 @@ body:
         "odometerKm": 15000,
         "status": "Operativo"
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790201297995

@@ -1,5 +1,5 @@
 $kind: http-request
-url: "{{base_url}}/pendientes"
+url: "{{base_url}}/requests/pendientes"
 method: GET
 auth:
   type: bearer
