@@ -38,7 +38,7 @@ const registrarDespacho = async (req, res) => {
 
         // 3. Registrar el despacho en la base de datos
         const insertDespacho = await cliente.query(
-            `INSERT INTO despachos (id_ticket, fecha_hora, galones_servidos, id_operador, estacion, observaciones)
+            `INSERT INTO despachos (id_ticket, fecha_hora, galones_servidos, id_operador, id_estacion, observaciones)
              VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_despacho`,
             [ticketUuid, dispatchTimestamp || new Date(), gallonsServed, dispatcherId, stationId, observations]
         );
