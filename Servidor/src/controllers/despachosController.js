@@ -12,7 +12,7 @@ const registrarDespacho = async (req, res) => {
         observations
     } = req.body;
 
-    const cliente = await db.connect();
+    const cliente = await db.pool.connect();
 
     try {
         await cliente.query('BEGIN'); // Iniciar transacción

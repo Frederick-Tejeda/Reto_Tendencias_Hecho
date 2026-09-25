@@ -1,12 +1,12 @@
 $kind: http-request
-url: "{{base_url}}/estaciones"
+url: "{{base_url}}/stations"
 method: POST
 body:
   type: json
   content: |-
     { 
-        "nombre": "", 
-        "ubicacion": "" 
+        "nombre": "Estación Av Venezuel", 
+        "ubicacion": "Av. Las Americas, esq. Av. Venezuela" 
     }
 auth:
   type: bearer
