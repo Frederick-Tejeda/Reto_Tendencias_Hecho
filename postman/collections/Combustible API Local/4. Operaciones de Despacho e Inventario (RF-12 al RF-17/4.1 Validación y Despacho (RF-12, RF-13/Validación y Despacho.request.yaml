@@ -5,9 +5,9 @@ body:
   type: json
   content: |-
     {
-        "ticketUuid": "550e8400-e29b-41d4-a716-446655440000",
-        "qrPayloadHash": "e3b0c442...",
-        "dispatcherId": 42,
+        "ticketUuid": "49a23e8c-cc9b-4d51-930a-4d93d83c9517",
+        "qrPayloadHash": "256f72ce96d8d95c9ef5b183bedf5fa2ee7f5c3b137897d97539adff62c4820f",
+        "dispatcherId": 3,
         "stationId": 1,
         "gallonsServed": 10.5,
         "dispatchTimestamp": "2026-09-13T18:13:55Z",

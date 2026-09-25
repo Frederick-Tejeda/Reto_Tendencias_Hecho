@@ -1,8 +1,8 @@
 $kind: http-request
-url: "{{base_url}}/tickets?status=Anulado&employeeId=1"
+url: "{{base_url}}/tickets?status=Enviado&employeeId=1"
 method: GET
 queryParams:
-  status: Anulado
+  status: Enviado
   employeeId: "1"
 auth:
   type: bearer

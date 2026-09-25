@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/estaciones"
+method: POST
+body:
+  type: json
+  content: |-
+    { 
+        "nombre": "", 
+        "ubicacion": "" 
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1427860882299739

@@ -14,21 +14,20 @@ DECLARE
     v_total_galones DECIMAL := 0;
 BEGIN
     -- Iterar sobre las solicitudes que aplican para asignación automática
-    -- (Asumiremos que las recurrentes se guardan con estado 'Programada')
     FOR v_solicitud IN 
         SELECT id_solicitud, id_empleado, id_vehiculo, id_departamento, cantidad_autorizada, tipo_combustible, fecha_vencimiento
         FROM solicitudes 
         WHERE estado = 'Programada'
-        -- Aquí puedes agregar filtros extra, ej: AND fecha_proxima_ejecucion = p_fecha_ejecucion
     LOOP
         -- Generar datos únicos para el ticket
         v_secuencia := 'COM-AUTO-' || TO_CHAR(CURRENT_TIMESTAMP, 'YYYYMMDDHH24MISS') || '-' || v_solicitud.id_solicitud;
+        
         -- Crear el hash del QR directamente en PostgreSQL
         v_qr_hash := encode(digest(v_secuencia || v_solicitud.id_empleado::TEXT || p_fecha_ejecucion::TEXT, 'sha256'), 'hex'); 
         
-        -- Insertar el ticket transaccionalmente
+        -- Insertar el ticket transaccionalmente con el estado válido
         INSERT INTO tickets (secuencia, id_solicitud, id_empleado, id_vehiculo, id_departamento, cantidad_autorizada, tipo_combustible, fecha_vencimiento, qr_hash, estado)
-        VALUES (v_secuencia, v_solicitud.id_solicitud, v_solicitud.id_empleado, v_solicitud.id_vehiculo, v_solicitud.id_departamento, v_solicitud.cantidad_autorizada, v_solicitud.tipo_combustible, v_solicitud.fecha_vencimiento, v_qr_hash, 'Generado y Enviado')
+        VALUES (v_secuencia, v_solicitud.id_solicitud, v_solicitud.id_empleado, v_solicitud.id_vehiculo, v_solicitud.id_departamento, v_solicitud.cantidad_autorizada, v_solicitud.tipo_combustible, v_solicitud.fecha_vencimiento, v_qr_hash, 'Enviado')
         RETURNING id_ticket INTO v_nuevo_ticket;
 
         -- Acumular a los contadores que devolverá la función
@@ -41,7 +40,7 @@ BEGIN
         
     END LOOP;
 
-    -- Retornar los totales finales al backend de Node.js
+    -- Retornar los totales finales al backend
     RETURN QUERY SELECT v_total_tickets, v_total_galones;
 END;
 $$;

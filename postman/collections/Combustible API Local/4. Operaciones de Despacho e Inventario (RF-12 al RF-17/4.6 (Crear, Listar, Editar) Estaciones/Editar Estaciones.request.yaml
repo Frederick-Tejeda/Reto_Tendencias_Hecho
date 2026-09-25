@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{base_url}}/estaciones/:id"
+method: PUT
+pathVariables:
+  id: "1"
+body:
+  type: json
+  content: |-
+    { 
+        "nombre": "", 
+        "ubicacion": "",
+        "estado": false 
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 3851722424342729

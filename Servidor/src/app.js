@@ -19,6 +19,7 @@ const ticketsRoutes = require('./routes/ticketsRoutes');
 // 4. Operaciones de Despacho e Inventario (RF-12 al RF-17)
 const despachosRoutes = require('./routes/despachosRoutes');
 const inventarioRoutes = require('./routes/inventarioRoutes');
+const estacionesRoutes = require('./routes/estacionesRoutes');
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 const reportesRoutes = require('./routes/reportesRoutes');
 
@@ -42,6 +43,7 @@ app.use('/api/v1/tickets', ticketsRoutes);
 // 4. Operaciones de Despacho e Inventario (RF-12 al RF-17)
 app.use('/api/v1/dispatch', despachosRoutes);
 app.use('/api/v1/inventory', inventarioRoutes);
+app.use('/api/v1/stations', estacionesRoutes);
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 app.use('/api/v1', reportesRoutes);
 
