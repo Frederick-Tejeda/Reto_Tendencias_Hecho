@@ -96,30 +96,29 @@ const registrarRecepcion = async (req, res) => {
     } = req.body;
 
     const id_usuario = req.user?.id || req.user?.id_usuario || receivedByUserId;
-    const cliente = await db.connect();
 
     try {
-        await cliente.query('BEGIN');
+        await db.query('BEGIN');
 
         // 1. Validar que el suplidor existe y está activo
-        const suplidorValido = await cliente.query(
+        const suplidorValido = await db.query(
             `SELECT id_suplidor FROM suplidores WHERE id_suplidor = $1 AND estado = TRUE`,
             [supplierId]
         );
 
         if (suplidorValido.rowCount === 0) {
-            await cliente.query('ROLLBACK');
+            await db.query('ROLLBACK');
             return res.status(400).json({ success: false, message: 'El suplidor especificado no existe o está inactivo.' });
         }
 
         // 2. Validar que el tanque existe y PERTENECE a la estación indicada (Uso de stationId)
-        const tanqueValido = await cliente.query(
+        const tanqueValido = await db.query(
             `SELECT id_tanque FROM inventario WHERE id_tanque = $1 AND id_estacion = $2`,
             [tankId, stationId]
         );
 
         if (tanqueValido.rowCount === 0) {
-            await cliente.query('ROLLBACK');
+            await db.query('ROLLBACK');
             return res.status(400).json({ 
                 success: false, 
                 message: 'El tanque no existe o no pertenece a la estación especificada.' 
@@ -127,7 +126,7 @@ const registrarRecepcion = async (req, res) => {
         }
 
         // 3. Actualizar el inventario del tanque
-        const updateInventario = await cliente.query(
+        const updateInventario = await db.query(
             `UPDATE inventario 
              SET existencia_actual = existencia_actual + $1 
              WHERE id_tanque = $2 
@@ -136,7 +135,7 @@ const registrarRecepcion = async (req, res) => {
         );
 
         // 4. Registrar el movimiento histórico 
-        const insertMovimiento = await cliente.query(
+        const insertMovimiento = await db.query(
             `INSERT INTO movimientos_inventario 
              (id_tanque, tipo_movimiento, volumen, volumen_documentado, factura, id_usuario, id_suplidor, observaciones, fecha_hora)
              VALUES ($1, 'Entrada', $2, $3, $4, $5, $6, $7, $8) 
@@ -156,13 +155,13 @@ const registrarRecepcion = async (req, res) => {
         const fuelReceiptId = insertMovimiento.rows[0].id_movimiento;
 
         // 5. Registrar en Auditoría
-        await cliente.query(
+        await db.query(
             `INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles)
              VALUES ($1, 'RECEPCION_COMBUSTIBLE', 'movimientos_inventario', $2)`,
             [id_usuario, `Recepción ID: ${fuelReceiptId} - Suplidor: ${supplierId} - Estación: ${stationId} - Recibido: ${receivedVolumeGallons} gal`]
         );
 
-        await cliente.query('COMMIT');
+        await db.query('COMMIT');
 
         res.status(201).json({
             success: true,
@@ -173,11 +172,11 @@ const registrarRecepcion = async (req, res) => {
         });
 
     } catch (error) {
-        await cliente.query('ROLLBACK');
+        await db.query('ROLLBACK');
         console.error('Error al registrar recepción de combustible:', error);
         res.status(500).json({ success: false, message: 'Error interno al registrar la entrada de combustible.' });
     } finally {
-        cliente.release();
+        db.release();
     }
 };
 
@@ -195,13 +194,11 @@ const ajustarInventario = async (req, res) => {
     // Prioridad al usuario del token, con fallback al body
     const id_usuario = req.user?.id || req.user?.id_usuario || authorizedBy;
 
-    const cliente = await db.connect();
-
     try {
-        await cliente.query('BEGIN');
+        await db.query('BEGIN');
 
         // 1. Actualizar la existencia en el tanque
-        const invResult = await cliente.query(
+        const invResult = await db.query(
             `UPDATE inventario 
              SET existencia_actual = existencia_actual + $1 
              WHERE id_tanque = $2 
@@ -210,13 +207,13 @@ const ajustarInventario = async (req, res) => {
         );
 
         if (invResult.rowCount === 0) {
-            await cliente.query('ROLLBACK');
+            await db.query('ROLLBACK');
             return res.status(404).json({ success: false, message: 'Tanque no encontrado.' });
         }
 
         // 2. Registrar en el historial de movimientos
         // (Nota: factura y id_suplidor van como NULL porque es un ajuste interno)
-        await cliente.query(
+        await db.query(
             `INSERT INTO movimientos_inventario 
              (id_tanque, tipo_movimiento, volumen, observaciones, id_usuario, fecha_hora) 
              VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)`,
@@ -224,13 +221,13 @@ const ajustarInventario = async (req, res) => {
         );
 
         // 3. Trazabilidad en Auditoría
-        await cliente.query(
+        await db.query(
             `INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
              VALUES ($1, 'AJUSTE_INVENTARIO', 'inventario', $2)`, 
             [id_usuario, `Ajuste ${adjustmentType}: ${volumeGal} galones. Razón: ${reason}`]
         );
 
-        await cliente.query('COMMIT');
+        await db.query('COMMIT');
 
         // 4. Respuesta cumpliendo con el contrato del frontend
         res.status(200).json({
@@ -240,11 +237,11 @@ const ajustarInventario = async (req, res) => {
             }
         });
     } catch (error) {
-        await cliente.query('ROLLBACK');
+        await db.query('ROLLBACK');
         console.error('Error al procesar ajuste de inventario:', error);
         res.status(500).json({ success: false, message: 'Error interno al procesar el ajuste de inventario.' });
     } finally {
-        cliente.release();
+        db.release();
     }
 };
 

@@ -5,11 +5,11 @@ body:
   type: json
   content: |-
     {
-        "role": "Despachador",
+        "role": "Auditor",
         "data": {
-            "email": "Despachador@email.com",
-            "password": "Despachador",
-            "name": "Nombre Despachador"
+            "email": "Auditor@email.com",
+            "password": "Auditor",
+            "name": "Nombre Auditor"
         }
     }
 order: 1790177270915

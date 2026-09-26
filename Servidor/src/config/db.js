@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.STAGE === "dev" ? false : true
+    ssl: process.env.STAGE === "development" ? false : true
 });
 
 // Evento para monitorear si la base de datos se desconecta inesperadamente
@@ -12,8 +12,9 @@ pool.on('error', (err, client) => {
     process.exit(-1);
 });
 
+const query = async (text, params) => pool.query(text, params);
+
 module.exports = {
-    // Envolvemos la función query para usarla fácilmente en los controladores
-    query: (text, params) => pool.query(text, params),
+    query,
     pool
 };

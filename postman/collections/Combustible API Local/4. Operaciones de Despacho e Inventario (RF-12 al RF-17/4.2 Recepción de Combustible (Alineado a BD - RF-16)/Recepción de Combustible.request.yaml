@@ -7,12 +7,12 @@ body:
     {
         "supplierId": 1,
         "stationId": 1,
-        "tankId": 2,
+        "tankId": 1,
         "invoiceNumber": "F-009988",
         "documentedVolumeGallons": 5000.0,
         "receivedVolumeGallons": 4995.5,
         "receivedAtUtc": "2026-09-13T10:30:00Z",
-        "receivedByUserId": 12,
+        "receivedByUserId": 2,
         "notes": "Llegó con ligera merma por temperatura"
     }
 auth:
