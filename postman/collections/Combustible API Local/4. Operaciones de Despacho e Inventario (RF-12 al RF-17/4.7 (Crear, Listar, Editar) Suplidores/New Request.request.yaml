@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{base_url}}/suppliers?estado=true"
+method: GET
+queryParams:
+  estado: "true"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1790386678383

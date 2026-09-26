@@ -15,4 +15,8 @@ body:
         "receivedByUserId": 12,
         "notes": "Llegó con ligera merma por temperatura"
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790202306649
