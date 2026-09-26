@@ -29,4 +29,8 @@ router.get(
     inventarioController.listarMovimientos
 );
 
+router.post('/', inventarioController.crearTanque);
+router.get('/', inventarioController.listarTanques);
+router.put('/:id', inventarioController.actualizarTanque);
+
 module.exports = router;

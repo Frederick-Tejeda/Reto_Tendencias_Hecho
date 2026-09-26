@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{base_url}}/inventory?id_estacion=1&estado=true"
+method: GET
+queryParams:
+  id_estacion: "1"
+  estado: "true"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 956637392596581

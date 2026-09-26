@@ -101,7 +101,7 @@ const registrarRecepcion = async (req, res) => {
     try {
         await cliente.query('BEGIN');
 
-        // 1. Validar que el suplidor existe antes de intentar insertar
+        // 1. Validar que el suplidor existe y está activo
         const suplidorValido = await cliente.query(
             `SELECT id_suplidor FROM suplidores WHERE id_suplidor = $1 AND estado = TRUE`,
             [supplierId]
@@ -112,7 +112,21 @@ const registrarRecepcion = async (req, res) => {
             return res.status(400).json({ success: false, message: 'El suplidor especificado no existe o está inactivo.' });
         }
 
-        // 2. Actualizar el inventario del tanque
+        // 2. Validar que el tanque existe y PERTENECE a la estación indicada (Uso de stationId)
+        const tanqueValido = await cliente.query(
+            `SELECT id_tanque FROM inventario WHERE id_tanque = $1 AND id_estacion = $2`,
+            [tankId, stationId]
+        );
+
+        if (tanqueValido.rowCount === 0) {
+            await cliente.query('ROLLBACK');
+            return res.status(400).json({ 
+                success: false, 
+                message: 'El tanque no existe o no pertenece a la estación especificada.' 
+            });
+        }
+
+        // 3. Actualizar el inventario del tanque
         const updateInventario = await cliente.query(
             `UPDATE inventario 
              SET existencia_actual = existencia_actual + $1 
@@ -121,12 +135,7 @@ const registrarRecepcion = async (req, res) => {
             [receivedVolumeGallons, tankId]
         );
 
-        if (updateInventario.rowCount === 0) {
-            await cliente.query('ROLLBACK');
-            return res.status(404).json({ success: false, message: 'Tanque no encontrado.' });
-        }
-
-        // 3. Registrar el movimiento histórico usando el id_suplidor verificado
+        // 4. Registrar el movimiento histórico 
         const insertMovimiento = await cliente.query(
             `INSERT INTO movimientos_inventario 
              (id_tanque, tipo_movimiento, volumen, volumen_documentado, factura, id_usuario, id_suplidor, observaciones, fecha_hora)
@@ -146,11 +155,11 @@ const registrarRecepcion = async (req, res) => {
 
         const fuelReceiptId = insertMovimiento.rows[0].id_movimiento;
 
-        // 4. Registrar en Auditoría (RF-21)
+        // 5. Registrar en Auditoría
         await cliente.query(
             `INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles)
              VALUES ($1, 'RECEPCION_COMBUSTIBLE', 'movimientos_inventario', $2)`,
-            [id_usuario, `Recepción ID: ${fuelReceiptId} - Suplidor ID: ${supplierId} - Recibido: ${receivedVolumeGallons} gal`]
+            [id_usuario, `Recepción ID: ${fuelReceiptId} - Suplidor: ${supplierId} - Estación: ${stationId} - Recibido: ${receivedVolumeGallons} gal`]
         );
 
         await cliente.query('COMMIT');
@@ -239,7 +248,100 @@ const ajustarInventario = async (req, res) => {
     }
 };
 
+// Crear un nuevo tanque
+const crearTanque = async (req, res) => {
+    const { tipo_combustible, capacidad_maxima, nivel_critico, id_estacion } = req.body;
+
+    try {
+        // Validar que la estación exista y esté activa
+        const estacion = await db.query('SELECT id_estacion FROM estaciones WHERE id_estacion = $1 AND estado = TRUE', [id_estacion]);
+        if (estacion.rowCount === 0) {
+            return res.status(404).json({ error: 'La estación especificada no existe o está inactiva.' });
+        }
+
+        const query = `
+            INSERT INTO inventario (tipo_combustible, capacidad_maxima, nivel_critico, id_estacion) 
+            VALUES ($1, $2, $3, $4) 
+            RETURNING *`;
+            
+        const { rows } = await db.query(query, [tipo_combustible, capacidad_maxima, nivel_critico, id_estacion]);
+        
+        res.status(201).json({ mensaje: 'Tanque creado con éxito', tanque: rows[0] });
+    } catch (error) {
+        if (error.code === '23505') {
+            return res.status(400).json({ error: 'Ya existe un tanque con ese tipo de combustible.' });
+        }
+        res.status(500).json({ error: 'Error al crear el tanque', detalle: error.message });
+    }
+};
+
+// Listar tanques (Filtros opcionales por estación y estado)
+const listarTanques = async (req, res) => {
+    const { id_estacion, estado } = req.query;
+    try {
+        let query = 'SELECT * FROM inventario WHERE 1=1';
+        let values = [];
+        let paramIndex = 1;
+
+        if (id_estacion) {
+            query += ` AND id_estacion = $${paramIndex}`;
+            values.push(id_estacion);
+            paramIndex++;
+        }
+
+        if (estado !== undefined) {
+            query += ` AND estado = $${paramIndex}`;
+            values.push(estado === 'true');
+            paramIndex++;
+        }
+
+        query += ' ORDER BY id_estacion ASC, id_tanque ASC';
+
+        const { rows } = await db.query(query, values);
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al listar los tanques', detalle: error.message });
+    }
+};
+
+// Actualizar tanque (Permite desactivar cambiando 'estado' a false)
+const actualizarTanque = async (req, res) => {
+    const { id } = req.params;
+    const { tipo_combustible, capacidad_maxima, nivel_critico, id_estacion, estado } = req.body;
+
+    try {
+        const query = `
+            UPDATE inventario 
+            SET tipo_combustible = COALESCE($1, tipo_combustible), 
+                capacidad_maxima = COALESCE($2, capacidad_maxima), 
+                nivel_critico = COALESCE($3, nivel_critico),
+                id_estacion = COALESCE($4, id_estacion),
+                estado = COALESCE($5, estado) 
+            WHERE id_tanque = $6 
+            RETURNING *`;
+            
+        const { rows } = await db.query(query, [
+            tipo_combustible, 
+            capacidad_maxima, 
+            nivel_critico, 
+            id_estacion, 
+            estado, 
+            id
+        ]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Tanque no encontrado' });
+        }
+        res.status(200).json({ mensaje: 'Tanque actualizado', tanque: rows[0] });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el tanque', detalle: error.message });
+    }
+};
+
 module.exports = {
+    crearTanque,
+    listarTanques,
+    actualizarTanque,
     consultarEstadoInventario,
     listarMovimientos,
     registrarRecepcion,

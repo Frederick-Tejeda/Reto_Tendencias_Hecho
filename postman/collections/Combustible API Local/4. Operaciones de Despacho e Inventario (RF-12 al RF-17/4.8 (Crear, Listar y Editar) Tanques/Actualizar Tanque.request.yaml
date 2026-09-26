@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{base_url}}/inventory/:id"
+method: PUT
+pathVariables:
+  id: "1"
+body:
+  type: json
+  content: |
+    {
+        "tipo_combustible": "Gasolina Regular",
+        "capacidad_maxima": 9000,
+        "nivel_critico": 1100,
+        "id_estacion": 1,
+        "estado": false
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 956989875788145

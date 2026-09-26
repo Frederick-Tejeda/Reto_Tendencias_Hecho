@@ -1,5 +1,4 @@
 $kind: http-request
-name: New Request
 url: "{{base_url}}/suppliers/:id"
 method: PUT
 pathVariables:
@@ -8,11 +7,11 @@ body:
   type: json
   content: |-
     {
-      "rnc": "130123456",
-      "nombre": "Isla Dominicana de Petróleo Corp.",
-      "telefono": "809-555-1234",
-      "correo": "contacto@isladominicana.com",
-      "estado": "false"
+        "rnc": "101001234",
+        "nombre": "Refinería Dominicana de Petróleo (REFIDOMSA)",
+        "telefono": 8292345678,
+        "correo": "contacto@refineriadominicana.com",
+        "estado": true
     }
 auth:
   type: bearer
