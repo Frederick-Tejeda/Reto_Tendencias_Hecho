@@ -3,7 +3,7 @@ url: "{{base_url}}/assignments/process-auto"
 method: POST
 body:
   type: json
-  content: '{ "executionDate": "2026-09-13" }'
+  content: '{ "executionDate": "2026-09-26" }'
 auth:
   type: bearer
   credentials:

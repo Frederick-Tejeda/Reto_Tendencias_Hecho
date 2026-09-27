@@ -4,21 +4,49 @@ const bcrypt = require('bcrypt'); // Asegúrate de tenerlo instalado: pnpm add b
 // 1.2 Creación de Usuario
 const crearUsuario = async (req, res) => {
     const { rol, data } = req.body;
-    const { correo, password, name } = data;
+    const { correo, password, name, id_empleado } = data;
+    const id_usuario_creador = req.usuario.id_usuario;
+
+    const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante']
+
+    if(!rolesPermitidos.includes(rol)) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el rol sea correcto.' })
+    
+    if (rol === 'Solicitante' && !id_empleado) {
+        return res.status(400).json({ success: false, message: 'El rol Solicitante requiere un id_empleado vinculado.' });
+    }
+
+    if(id_empleado){
+         const result = await db.query(
+            `SELECT 1 FROM empleados WHERE id_empleado = $1`,
+            [id_empleado]);
+        if(result.rows.length == 0) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el id_empleado sea correcto.' })
+    }
+
+    const cliente = await db.pool.connect();
 
     try {
+
+        await cliente.query('BEGIN');
         // En un escenario real, el frontend envía texto plano y el backend hashea. 
         // Si el frontend ya envía un hash (como dice el JSON), puedes omitir esta línea.
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        const result = await db.query(
-            `INSERT INTO usuarios (correo, password_hash, rol, nombre_completo) 
-             VALUES ($1, $2, $3, $4) RETURNING id_usuario, nombre_completo, rol`,
-            [correo, passwordHash, rol, name]
+        const result = await cliente.query(
+            `INSERT INTO usuarios (correo, password_hash, rol, nombre_completo, id_empleado) 
+             VALUES ($1, $2, $3, $4, $5) RETURNING id_usuario, nombre_completo, rol`,
+            [correo, passwordHash, rol, name, id_empleado || null]
         );
 
         const newUser = result.rows[0];
+
+        // Registro de Auditoría
+        await cliente.query(`
+            INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
+            VALUES ($1, 'CREAR_USUARIO', 'usuarios', $2)
+        `, [id_usuario_creador, `Nuevo usuario ID: ${newUser.id_usuario}, Rol: ${rol}`]);
+
+        await cliente.query('COMMIT');
 
         res.status(201).json({
             success: true,
@@ -31,8 +59,12 @@ const crearUsuario = async (req, res) => {
             }
         });
     } catch (error) {
+        await cliente.query('ROLLBACK');
         console.error('Error al crear usuario:', error);
         res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el correo no esté duplicado.' });
+    } finally {
+        // Liberar el cliente al pool
+        cliente.release();
     }
 };
 
@@ -40,22 +72,50 @@ const crearUsuario = async (req, res) => {
 const modificarUsuario = async (req, res) => {
     const { id } = req.params;
     const { data } = req.body;
-    const { correo, rol } = data;
+    const { correo, rol, id_empleado } = data;
+    const id_usuario_modificador = req.usuario.id_usuario;
+
+    const id_empleadoInt = Number(id_empleado);
+
+    const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante']
+
+    if(!rolesPermitidos.includes(rol)) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el rol sea correcto.' })
+
+    if(id_empleado && id_empleadoInt > 0){
+         const result = await db.query(
+            `SELECT 1 FROM empleados WHERE id_empleado = $1`,
+            [id_empleadoInt]);
+        if(result.rows.length == 0) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el id_empleado sea correcto.' })
+    }
+
+    const cliente = await db.pool.connect();
 
     try {
-        await db.query(
-            `UPDATE usuarios SET correo = COALESCE($1, correo), rol = COALESCE($2, rol) 
-             WHERE id_usuario = $3`,
-            [correo, rol, id]
+        await cliente.query(
+            `UPDATE usuarios SET correo = COALESCE($1, correo), rol = COALESCE($2, rol), id_empleado = COALESCE($3, id_empleado)
+             WHERE id_usuario = $4`,
+            [correo, rol, (id_empleadoInt > 0) ? id_empleadoInt : null, id]
         );
+
+        // Registro de Auditoría
+        await cliente.query(`
+            INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
+            VALUES ($1, 'MODIFICAR_USUARIO', 'usuarios', $2)
+        `, [id_usuario_modificador, `Usuario modificado ID: ${id}`]);
+
+        await cliente.query('COMMIT');
 
         res.status(200).json({
             success: true,
             message: 'Usuario modificado satisfactoriamente'
         });
     } catch (error) {
+        await cliente.query('ROLLBACK');
         console.error('Error al modificar usuario:', error);
         res.status(500).json({ success: false, message: 'Error interno al modificar usuario' });
+    } finally {
+        // Liberar el cliente al pool
+        cliente.release();
     }
 };
 
@@ -63,23 +123,38 @@ const modificarUsuario = async (req, res) => {
 const desactivarUsuario = async (req, res) => {
     const { id } = req.params;
     const { isActive, reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
+    const id_usuario_modificador = req.usuario.id_usuario;
+
+    const cliente = await db.pool.connect();
 
     try {
-        await db.query(
+        await cliente.query(
             'UPDATE usuarios SET estado = $1 WHERE id_usuario = $2',
             [isActive, id]
         );
 
-        // Opcional: Registrar el 'reason' en tu tabla auditoria_trazabilidad
-        
         const accionTexto = isActive ? 'activado' : 'desactivado';
+        const accionTextoAuditoria = isActive ? 'ACTIVAR_USUARIO' : 'DESACTIVAR_USUARIO';
+
+        // Registro de Auditoría
+        await cliente.query(`
+            INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
+            VALUES ($1, $2, 'usuarios', $3)
+        `, [id_usuario_modificador, accionTextoAuditoria, `Usuario ${accionTexto} ID: ${id}. Motivo: ${reason}`]);
+
+        await db.query('COMMIT');       
+
         res.status(200).json({
             success: true,
             message: `Usuario ${accionTexto} satisfactoriamente`
         });
     } catch (error) {
+        await cliente.query('ROLLBACK');
         console.error('Error al desactivar usuario:', error);
         res.status(500).json({ success: false, message: 'Error interno al cambiar estado del usuario' });
+    } finally {
+        // Liberar el cliente al pool
+        cliente.release();
     }
 };
 
@@ -88,12 +163,13 @@ const listarUsuarios = async (req, res) => {
     try {
         // En una implementación completa, aquí extraerías page y limit de req.query para el offset
         const result = await db.query(
-            `SELECT id_usuario, nombre_completo, correo, rol, estado 
+            `SELECT id_usuario, id_empleado, nombre_completo, correo, rol, estado 
              FROM usuarios ORDER BY id_usuario DESC`
         );
 
         const formatedData = result.rows.map(user => ({
-            id: String(user.id_usuario),
+            id_usuario: String(user.id_usuario),
+            id_empleado: String(user.id_empleado),
             name: user.nombre_completo,
             correo: user.correo,
             rol: user.rol,

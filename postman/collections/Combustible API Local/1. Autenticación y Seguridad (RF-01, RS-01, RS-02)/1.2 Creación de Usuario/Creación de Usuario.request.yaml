@@ -5,11 +5,12 @@ body:
   type: json
   content: |-
     {
-        "rol": "Auditor",
+        "rol": "Solicitante",
         "data": {
-            "correo": "Auditor@email.com",
-            "password": "Auditor",
-            "name": "Nombre Auditor"
+            "correo": "Solicitante@email.com",
+            "password": "Solicitante",
+            "name": "Nombre Solicitante",
+            "id_empleado": "1"
         }
     }
 order: 1790177270915

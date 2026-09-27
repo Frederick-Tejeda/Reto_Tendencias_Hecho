@@ -4,9 +4,29 @@ method: POST
 body:
   type: json
   content: |-
+    // {     
+    //     "correo": "Supervisor@email.com",     
+    //     "password": "Supervisor" 
+    // }
+
+    // {     
+    //     "correo": "Solicitante@email.com",     
+    //     "password": "Solicitante" 
+    // }
+
+    // {     
+    //     "correo": "Administrador@email.com",     
+    //     "password": "Administrador" 
+    // }
+
+    // {     
+    //     "correo": "Auditor@email.com",     
+    //     "password": "Auditor" 
+    // }
+
     {     
-        "correo": "Solicitante@email.com",     
-        "password": "Solicitante" 
+        "correo": "Despachador@email.com",     
+        "password": "Despachador" 
     }
 scripts:
   - type: afterResponse

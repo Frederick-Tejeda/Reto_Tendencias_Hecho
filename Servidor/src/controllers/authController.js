@@ -8,7 +8,7 @@ const login = async (req, res) => {
     try {
         // 1. Buscar al usuario en la base de datos
         const result = await db.query(
-            'SELECT id_usuario, correo, password_hash, rol FROM usuarios WHERE correo = $1 AND estado = true',
+            'SELECT id_usuario, correo, password_hash, rol, id_empleado, estado FROM usuarios WHERE correo = $1',
             [correo]
         );
 
@@ -17,6 +17,8 @@ const login = async (req, res) => {
         }
 
         const usuario = result.rows[0];
+
+        if (!usuario.estado) return res.status(403).json({ message: 'Usuario inactivo' });
 
         // 2. Comparar la contraseña ingresada con el hash de la BD usando bcrypt
         const passwordValida = await bcrypt.compare(password, usuario.password_hash);
@@ -30,7 +32,8 @@ const login = async (req, res) => {
             { 
                 id_usuario: usuario.id_usuario, 
                 correo: usuario.correo,
-                rol: usuario.rol 
+                rol: usuario.rol,
+                id_empleado: usuario.id_empleado
             },
             process.env.JWT_SECRET,
             { expiresIn: '8h' } // La sesión durará 8 horas
@@ -43,6 +46,7 @@ const login = async (req, res) => {
                 token,
                 "user":{
                     id: usuario.id_usuario,
+                    id_empleado: usuario.id_empleado,
                     correo: usuario.correo,
                     role: usuario.rol
                 }

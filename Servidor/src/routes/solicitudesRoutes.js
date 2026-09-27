@@ -8,7 +8,7 @@ router.use(verificarToken);
 
 router.post(
     '/', 
-    verificarRol(['Solicitante']), 
+    verificarRol(['Administrador', 'Supervisor', 'Solicitante']), 
     solicitudesController.crearSolicitud
 );
 

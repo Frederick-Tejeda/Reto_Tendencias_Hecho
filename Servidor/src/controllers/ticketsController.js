@@ -133,6 +133,8 @@ const listarTicketPorIdEmpleado = async (req, res) => {
         return res.status(400).json({ success: false, message: 'ID de empleado es requerido' });
     }
 
+    if(idEmpleado != req.usuario.id_empleado) res.status(401).json({ success: false, message: 'ID de empleado no permitido para listar' })
+
     try {
         let queryValidateEmpleado = `SELECT 1 FROM empleados WHERE id_empleado = $1`;
         const validateEmpleadoResult = await db.query(queryValidateEmpleado, [idEmpleado]);

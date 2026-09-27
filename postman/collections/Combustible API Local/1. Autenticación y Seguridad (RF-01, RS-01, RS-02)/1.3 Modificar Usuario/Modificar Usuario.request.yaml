@@ -9,7 +9,8 @@ body:
     {
         "data": { 
             "correo": "Supervisor@email.com", 
-            "rol": "Supervisor" 
+            "rol": "Supervisor",
+            "id_empleado": 8
         }
     }
 order: 1790177350780

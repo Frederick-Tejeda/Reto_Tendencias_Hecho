@@ -2,12 +2,12 @@ $kind: http-request
 url: "{{base_url}}/admin/users/:id/deactivate"
 method: PUT
 pathVariables:
-  id: "2"
+  id: "8"
 body:
   type: json
   content: |-
     { 
-        "reason": "Fallo al registrarlo corregido", 
+        "reason": "Fallo al registrarlo. corregido", 
         "isActive": true 
     }
 order: 1790177429927

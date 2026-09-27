@@ -8,7 +8,7 @@ router.use(verificarToken);
 
 router.post('/issue', verificarRol(['Supervisor']), ticketsController.emitirTicket);
 router.get('/', verificarRol(['Supervisor']), ticketsController.listarTickets);
-router.get('/:idEmpleado', verificarRol(['Solicitante']), ticketsController.listarTicketPorIdEmpleado);
+router.get('/:idEmpleado', ticketsController.listarTicketPorIdEmpleado);
 router.put('/:uuid/cancel', verificarRol(['Supervisor']), ticketsController.anularTicket);
 
 module.exports = router;

@@ -2,82 +2,58 @@ const db = require('../config/db');
 
 // RF-05: Crear una nueva solicitud de combustible
 const crearSolicitud = async (req, res) => {
-    const {
-        employeeId,
-        vehicleId,
-        departmentId,
-        authorizedQuantityGal,
-        fuelType,
-        requestType,
-        requestDate,
-        expirationDate,
-        recurrence
-    } = req.body;
+    // 1. Extraemos los datos del payload del body
+    const { vehicleId, departmentId, authorizedQuantityGal, fuelType, requestDate, expirationDate } = req.body;
+    
+    // 2. Extraemos la identidad confiable desde el Token decodificado por el middleware
+    const usuarioAuth = req.usuario; 
+    const id_usuario_creador = usuarioAuth.id_usuario;
+
+    // 3. Resolución del Beneficiario (id_empleado)
+    let id_empleado_beneficiario;
+
+    if (usuarioAuth.rol === 'Solicitante') {
+        // Autoservicio: El usuario solo puede pedir combustible para sí mismo
+        if (!usuarioAuth.id_empleado) {
+            return res.status(403).json({ success: false, message: 'Tu cuenta no está vinculada a un perfil de empleado.' });
+        }
+        id_empleado_beneficiario = usuarioAuth.id_empleado;
+    } else {
+        // Delegación: Roles superiores pueden pedir a nombre de otros (ej. enviar id_empleado en el body)
+        id_empleado_beneficiario = req.body.employeeId;
+        if (!id_empleado_beneficiario) {
+            return res.status(400).json({ success: false, message: 'Debe especificar el id_empleado beneficiario.' });
+        }
+    }
+
+    const d1 = new Date(requestDate);
+    const d2 = new Date(expirationDate);
+
+    if(d1 >= d2) res.status(404).json({ success: false, message: 'Fecha de la solicitud debe ser menor a la fecha de expiracion' });
+
+    const cliente = await db.pool.connect();
 
     try {
-        // El estado inicial depende del tipo de solicitud exigido por el DTO
-        const tiposProgramados = ['Programada', 'Recurrente', 'Automática'];
-        let estadoInicial = 'Pendiente';
-
-        if (tiposProgramados.includes(requestType)) {
-            estadoInicial = 'Programada';
-        }
-
-        // 2. Extraer valores de recurrencia flexibilizando la condición
-        let frecuencia = null;
-        let diaSemana = null;
-        let fechaInicio = null;
-        let fechaFin = null;
-
-        if (tiposProgramados.includes(requestType) && recurrence) {
-            frecuencia = recurrence.frequency || null;
-            diaSemana = recurrence.dayOfWeek || null;
-            fechaInicio = recurrence.startDate || null;
-            fechaFin = recurrence.endDate || null;
-        }
-
-        const query = `
-            INSERT INTO solicitudes (
-                id_empleado, id_vehiculo, id_departamento, 
-                cantidad_autorizada, tipo_combustible, tipo_solicitud,
-                fecha_solicitud, fecha_vencimiento, estado,
-                frecuencia, dia_semana, fecha_inicio_recurrencia, fecha_fin_recurrencia
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-            ) RETURNING id_solicitud;
-        `;
-
-        const values = [
-            employeeId, 
+        // 4. Llamada al procedimiento almacenado actualizado
+        await cliente.query(`
+            CALL crear_solicitud_combustible($1, $2, $3, $4, $5, $6, $7)
+        `, [
+            id_empleado_beneficiario, 
             vehicleId, 
-            departmentId,
+            departmentId, 
             authorizedQuantityGal, 
-            fuelType, 
-            requestType || 'Manual',
-            requestDate || new Date(), 
+            fuelType,
             expirationDate, 
-            estadoInicial,
-            frecuencia, 
-            diaSemana, 
-            fechaInicio, 
-            fechaFin
-        ];
+            id_usuario_creador
+        ]);
 
-        const result = await db.query(query, values);
-        const nuevaSolicitudId = result.rows[0].id_solicitud;
-
-        // Respuesta estructurada según el DTO (201 Created)
-        res.status(201).json({
-            success: true,
-            data: {
-                requestId: nuevaSolicitudId,
-                status: estadoInicial
-            }
-        });
-
+        res.status(201).json({ success: true, message: 'Solicitud creada con éxito' });
     } catch (error) {
+        await cliente.query('ROLLBACK');
         console.error('Error al crear solicitud:', error);
-        res.status(500).json({ success: false, message: 'Error interno al procesar la solicitud' });
+        res.status(500).json({ success: false, error: error.message });
+    } finally {
+        cliente.release();
     }
 };
 
