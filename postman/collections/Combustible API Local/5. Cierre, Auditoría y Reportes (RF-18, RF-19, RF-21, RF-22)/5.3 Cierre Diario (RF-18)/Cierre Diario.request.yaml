@@ -6,6 +6,11 @@ body:
   content: |-
     { 
         "date": "2026-09-13", 
-        "dispatcherId": 42 
+        "dispatcherId": 3,
+        "stationId": 1
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790202940238

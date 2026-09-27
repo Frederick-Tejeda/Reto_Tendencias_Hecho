@@ -5,8 +5,8 @@ body:
   type: json
   content: |-
     {     
-        "correo": "Administrador@email.com",     
-        "password": "Administrador" 
+        "correo": "Solicitante@email.com",     
+        "password": "Solicitante" 
     }
 scripts:
   - type: afterResponse

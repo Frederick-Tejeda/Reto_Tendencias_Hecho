@@ -4,9 +4,9 @@ method: POST
 body:
   type: json
   content: |-
-    { 
-        "nombre": "Estación Av Venezuel", 
-        "ubicacion": "Av. Las Americas, esq. Av. Venezuela" 
+    {
+      "nombre": "Estación Av San Vicente",
+      "ubicacion": "Av. San Vicente de Paul, esq. Calle Puerto Rico"
     }
 auth:
   type: bearer

@@ -1,5 +1,5 @@
 $kind: http-request
-url: "{{base_url}}/estaciones"
+url: "{{base_url}}/stations"
 method: GET
 auth:
   type: bearer

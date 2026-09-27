@@ -7,11 +7,14 @@ const crypto = require('crypto');
 const emitirTicket = async (req, res) => {
     const { requestId, approvedBy } = req.body;
     
+    // 1. Obtener un cliente dedicado del pool
+    const cliente = await db.pool.connect();
+    
     try {
-        await db.query('BEGIN'); // Iniciamos transacción manual para asegurar integridad
+        await cliente.query('BEGIN'); // Iniciamos transacción en la conexión aislada
 
-        // 1. Obtener datos de la solicitud
-        const solResult = await db.query(`
+        // 2. Obtener datos de la solicitud
+        const solResult = await cliente.query(`
             SELECT s.*, d.nombre as depto_nombre 
             FROM solicitudes s 
             JOIN departamentos d ON s.id_departamento = d.id_departamento 
@@ -21,17 +24,17 @@ const emitirTicket = async (req, res) => {
         if (solResult.rows.length === 0) throw new Error('Solicitud no encontrada o ya procesada');
         const sol = solResult.rows[0];
 
-        // 2. Generar Secuencia y UUID nativo
-        const seqResult = await db.query(`SELECT nextval('ticket_seq') as seq`);
+        // 3. Generar Secuencia y UUID nativo
+        const seqResult = await cliente.query(`SELECT nextval('ticket_seq') as seq`);
         const numSecuencia = String(seqResult.rows[0].seq).padStart(6, '0');
         const sequentialId = `COM-2026-${numSecuencia}`;
 
-        // 3. Generar Hash Criptográfico (RS-04)
+        // 4. Generar Hash Criptográfico
         const rawData = `${requestId}|${sequentialId}|${sol.id_empleado}|${sol.id_vehiculo}|${sol.cantidad_autorizada}`;
         const qrPayloadHash = crypto.createHash('sha256').update(rawData).digest('hex');
 
-        // 4. Insertar Ticket
-        const ticketResult = await db.query(`
+        // 5. Insertar Ticket
+        const ticketResult = await cliente.query(`
             INSERT INTO tickets (secuencia, id_solicitud, id_empleado, id_vehiculo, id_departamento, cantidad_autorizada, tipo_combustible, fecha_vencimiento, qr_hash, estado) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'Enviado') 
             RETURNING id_ticket
@@ -39,12 +42,13 @@ const emitirTicket = async (req, res) => {
 
         const uuid = ticketResult.rows[0].id_ticket;
 
-        // 5. Actualizar solicitud y registrar auditoría
-        await db.query(`UPDATE solicitudes SET estado = 'Aprobada' WHERE id_solicitud = $1`, [requestId]);
-        await db.query(`INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) VALUES ($1, 'EMITIR_TICKET', 'tickets', $2)`, 
+        // 6. Actualizar solicitud y registrar auditoría
+        await cliente.query(`UPDATE solicitudes SET estado = 'Aprobada' WHERE id_solicitud = $1`, [requestId]);
+        
+        await cliente.query(`INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) VALUES ($1, 'EMITIR_TICKET', 'tickets', $2)`, 
             [approvedBy, `Ticket generado: ${sequentialId}`]);
 
-        await db.query('COMMIT');
+        await cliente.query('COMMIT');
 
         res.status(201).json({
             success: true,
@@ -58,9 +62,12 @@ const emitirTicket = async (req, res) => {
             }
         });
     } catch (error) {
-        await db.query('ROLLBACK');
+        await cliente.query('ROLLBACK');
         console.error('Error al emitir ticket:', error);
         res.status(400).json({ success: false, message: error.message || 'Error al emitir el ticket' });
+    } finally {
+        // 7. Liberar el cliente para que vuelva al pool
+        cliente.release();
     }
 };
 

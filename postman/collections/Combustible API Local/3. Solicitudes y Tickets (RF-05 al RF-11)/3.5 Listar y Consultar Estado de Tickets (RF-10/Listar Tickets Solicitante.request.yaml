@@ -1,8 +1,8 @@
 $kind: http-request
-url: "{{base_url}}/dashboard/summary"
+url: "{{base_url}}/tickets/1"
 method: GET
 auth:
   type: bearer
   credentials:
     token: "{{token}}"
-order: 1790202772768
+order: 3958622990479132

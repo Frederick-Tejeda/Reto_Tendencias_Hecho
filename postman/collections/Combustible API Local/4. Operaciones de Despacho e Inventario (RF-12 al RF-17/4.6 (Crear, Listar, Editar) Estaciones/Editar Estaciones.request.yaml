@@ -1,5 +1,5 @@
 $kind: http-request
-url: "{{base_url}}/estaciones/:id"
+url: "{{base_url}}/stations/:id"
 method: PUT
 pathVariables:
   id: "1"
@@ -7,8 +7,8 @@ body:
   type: json
   content: |-
     { 
-        "nombre": "", 
-        "ubicacion": "",
+        "nombre": "Estación Av Venezuela", 
+        "ubicacion": "Av. Las Americas, esq. Av. Venezuela",
         "estado": false 
     }
 auth:

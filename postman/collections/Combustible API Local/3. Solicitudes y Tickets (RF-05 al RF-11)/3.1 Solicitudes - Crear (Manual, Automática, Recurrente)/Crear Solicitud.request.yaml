@@ -4,21 +4,31 @@ method: POST
 body:
   type: json
   content: |-
+    // {
+    //     "employeeId": 1,
+    //     "vehicleId": 1,
+    //     "departmentId": 1,
+    //     "authorizedQuantityGal": 25,
+    //     "fuelType": "Gasoil",
+    //     "requestType": "Programada",
+    //     "requestDate": "2026-09-13T10:00:00Z",
+    //     "expirationDate": "2026-10-15T23:59:59Z",
+    //     "recurrence": {
+    //         "frequency": "Semanal",
+    //         "dayOfWeek": 1,
+    //         "startDate": "2026-09-15T00:00:00Z",
+    //         "endDate": "2026-12-31T23:59:59Z"
+    //     }
+    // }
+
     {
         "employeeId": 1,
         "vehicleId": 1,
         "departmentId": 1,
-        "authorizedQuantityGal": 20,
+        "authorizedQuantityGal": 25,
         "fuelType": "Gasoil",
-        "requestType": "Programada",
         "requestDate": "2026-09-13T10:00:00Z",
-        "expirationDate": "2026-10-15T23:59:59Z",
-        "recurrence": {
-            "frequency": "Semanal",
-            "dayOfWeek": 1,
-            "startDate": "2026-09-15T00:00:00Z",
-            "endDate": "2026-12-31T23:59:59Z"
-        }
+        "expirationDate": "2026-10-15T23:59:59Z"
     }
 auth:
   type: bearer

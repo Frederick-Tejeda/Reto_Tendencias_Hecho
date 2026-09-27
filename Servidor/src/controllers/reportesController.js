@@ -116,39 +116,59 @@ const generarReporteGeneral = async (req, res) => {
 // 5.3 Cierre Diario (RF-18)
 // ==========================================
 const generarCierreDiario = async (req, res) => {
-    const { date, dispatcherId } = req.body;
+    // 1. Ahora también recibimos el stationId
+    const { date, dispatcherId, stationId } = req.body;
+
+    if (!date || !dispatcherId || !stationId) {
+        return res.status(400).json({ success: false, message: 'Faltan parámetros: date, dispatcherId, stationId' });
+    }
+
+    // 2. Usar cliente dedicado para la transacción (Corregido)
+    const cliente = await db.pool.connect();
 
     try {
-        await db.query('BEGIN');
+        await cliente.query('BEGIN');
 
-        // 1. Calcular volumen total despachado en la fecha solicitada
-        const despRes = await db.query(
+        // 3. Calcular volumen total despachado en esa estación específica
+        const despRes = await cliente.query(
             `SELECT COALESCE(SUM(galones_servidos), 0) as total_despachado 
-             FROM despachos WHERE DATE(fecha_hora) = $1`, [date]
+             FROM despachos 
+             WHERE DATE(fecha_hora) = $1 AND id_estacion = $2`, 
+            [date, stationId]
         );
         const volumenDespachado = Number(despRes.rows[0].total_despachado);
 
-        // 2. Obtener el inventario final (fotografía actual del tanque principal)
-        const invRes = await db.query(`SELECT existencia_actual FROM inventario WHERE id_tanque = 1`);
+        // 4. Obtener el inventario final (sumando todos los tanques de esa estación)
+        const invRes = await cliente.query(
+            `SELECT COALESCE(SUM(existencia_actual), 0) as existencia_actual 
+             FROM inventario 
+             WHERE id_estacion = $1 AND estado = TRUE`,
+            [stationId]
+        );
         const inventarioFinal = Number(invRes.rows[0].existencia_actual);
 
-        // 3. Registrar el acta de cierre digital
-        await db.query(
-            `INSERT INTO cierres_diarios (fecha, volumen_despachado, inventario_final, id_usuario) 
-             VALUES ($1, $2, $3, $4) ON CONFLICT (fecha) DO UPDATE SET 
-             volumen_despachado = EXCLUDED.volumen_despachado, inventario_final = EXCLUDED.inventario_final`,
-            [date, volumenDespachado, inventarioFinal, dispatcherId]
+        // 5. Registrar el acta de cierre digital usando la nueva restricción compuesta
+        await cliente.query(
+            `INSERT INTO cierres_diarios (fecha, id_estacion, volumen_despachado, inventario_final, id_usuario) 
+             VALUES ($1, $2, $3, $4, $5) 
+             ON CONFLICT (fecha, id_estacion) 
+             DO UPDATE SET 
+             volumen_despachado = EXCLUDED.volumen_despachado, 
+             inventario_final = EXCLUDED.inventario_final,
+             id_usuario = EXCLUDED.id_usuario`,
+            [date, stationId, volumenDespachado, inventarioFinal, dispatcherId]
         );
 
-        await db.query('COMMIT');
+        await cliente.query('COMMIT');
 
-        // 4. Generar el Excel del Acta de Cierre
+        // 6. Generar el Excel del Acta de Cierre
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Acta de Cierre');
 
         worksheet.addRows([
             ['ACTA DE CIERRE DIARIO DE COMBUSTIBLE'],
             ['Fecha de Cierre:', date],
+            ['ID Estación:', stationId],
             ['Despachador ID:', dispatcherId],
             [],
             ['MÉTRICAS', 'GALONES'],
@@ -157,13 +177,17 @@ const generarCierreDiario = async (req, res) => {
         ]);
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="cierre_diario_${date}.xlsx"`);
-        
+        res.setHeader('Content-Disposition', `attachment; filename="cierre_diario_estacion_${stationId}_${date}.xlsx"`);
+
         await workbook.xlsx.write(res);
         return res.end();
+        
     } catch (error) {
-        await db.query('ROLLBACK');
-        res.status(500).json({ success: false, message: 'Error al ejecutar cierre diario' });
+        await cliente.query('ROLLBACK');
+        res.status(500).json({ success: false, error: error.message || error });
+    } finally {
+        // Liberar el cliente al pool
+        cliente.release();
     }
 };
 

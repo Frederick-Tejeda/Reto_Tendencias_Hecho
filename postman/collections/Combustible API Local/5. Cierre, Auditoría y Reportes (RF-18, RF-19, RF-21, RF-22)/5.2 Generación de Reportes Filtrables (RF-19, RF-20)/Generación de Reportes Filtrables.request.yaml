@@ -12,4 +12,8 @@ queryParams:
   internalCode: V-001
   fuelType: Gasoil
   status: Creado
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790202815468

@@ -5,13 +5,14 @@ pathVariables:
   id: "1"
 body:
   type: json
-  content: |
+  content: |-
     {
         "tipo_combustible": "Gasolina Regular",
-        "capacidad_maxima": 9000,
-        "nivel_critico": 1100,
+        "existencia_actual": "4980.30",
+        "capacidad_maxima": "9000.00",
+        "nivel_critico": "1100.00",
         "id_estacion": 1,
-        "estado": false
+        "estado": true
     }
 auth:
   type: bearer
