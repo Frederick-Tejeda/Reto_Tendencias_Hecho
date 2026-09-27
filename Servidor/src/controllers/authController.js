@@ -3,13 +3,13 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { correo, password } = req.body;
 
     try {
         // 1. Buscar al usuario en la base de datos
         const result = await db.query(
-            'SELECT id_usuario, email, password_hash, rol FROM usuarios WHERE email = $1 AND estado = true',
-            [email]
+            'SELECT id_usuario, correo, password_hash, rol FROM usuarios WHERE correo = $1 AND estado = true',
+            [correo]
         );
 
         if (result.rows.length === 0) {
@@ -29,7 +29,7 @@ const login = async (req, res) => {
         const token = jwt.sign(
             { 
                 id_usuario: usuario.id_usuario, 
-                email: usuario.email,
+                correo: usuario.correo,
                 rol: usuario.rol 
             },
             process.env.JWT_SECRET,
@@ -43,7 +43,7 @@ const login = async (req, res) => {
                 token,
                 "user":{
                     id: usuario.id_usuario,
-                    email: usuario.email,
+                    correo: usuario.correo,
                     role: usuario.rol
                 }
             }
