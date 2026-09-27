@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt'); // Asegúrate de tenerlo instalado: pnpm add b
 
 // 1.2 Creación de Usuario
 const crearUsuario = async (req, res) => {
-    const { role, data } = req.body;
-    const { email, password, name } = data;
+    const { rol, data } = req.body;
+    const { correo, password, name } = data;
 
     try {
         // En un escenario real, el frontend envía texto plano y el backend hashea. 
@@ -13,9 +13,9 @@ const crearUsuario = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const result = await db.query(
-            `INSERT INTO usuarios (email, password_hash, rol, nombre_completo) 
+            `INSERT INTO usuarios (correo, password_hash, rol, nombre_completo) 
              VALUES ($1, $2, $3, $4) RETURNING id_usuario, nombre_completo, rol`,
-            [email, passwordHash, role, name]
+            [correo, passwordHash, rol, name]
         );
 
         const newUser = result.rows[0];
@@ -26,13 +26,13 @@ const crearUsuario = async (req, res) => {
                 user: {
                     id: String(newUser.id_usuario), // Cast a string para el frontend
                     name: newUser.nombre_completo,
-                    role: newUser.rol
+                    rol: newUser.rol
                 }
             }
         });
     } catch (error) {
         console.error('Error al crear usuario:', error);
-        res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el email no esté duplicado.' });
+        res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el correo no esté duplicado.' });
     }
 };
 
@@ -40,13 +40,13 @@ const crearUsuario = async (req, res) => {
 const modificarUsuario = async (req, res) => {
     const { id } = req.params;
     const { data } = req.body;
-    const { email, role } = data;
+    const { correo, rol } = data;
 
     try {
         await db.query(
-            `UPDATE usuarios SET email = COALESCE($1, email), rol = COALESCE($2, rol) 
+            `UPDATE usuarios SET correo = COALESCE($1, correo), rol = COALESCE($2, rol) 
              WHERE id_usuario = $3`,
-            [email, role, id]
+            [correo, rol, id]
         );
 
         res.status(200).json({
@@ -88,15 +88,15 @@ const listarUsuarios = async (req, res) => {
     try {
         // En una implementación completa, aquí extraerías page y limit de req.query para el offset
         const result = await db.query(
-            `SELECT id_usuario, nombre_completo, email, rol, estado 
+            `SELECT id_usuario, nombre_completo, correo, rol, estado 
              FROM usuarios ORDER BY id_usuario DESC`
         );
 
         const formatedData = result.rows.map(user => ({
             id: String(user.id_usuario),
             name: user.nombre_completo,
-            email: user.email,
-            role: user.rol,
+            correo: user.correo,
+            rol: user.rol,
             isActive: user.estado
         }));
 

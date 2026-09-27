@@ -13,7 +13,7 @@ router.post(
 
 router.post(
     '/adjust', 
-    verificarRol(['Administrador', 'Auditor']), 
+    verificarRol(['Administrador', 'Supervisor']), 
     inventarioController.ajustarInventario
 );
 
@@ -29,8 +29,8 @@ router.get(
     inventarioController.listarMovimientos
 );
 
-router.post('/', inventarioController.crearTanque);
-router.get('/', inventarioController.listarTanques);
-router.put('/:id', inventarioController.actualizarTanque);
+router.post('/', verificarRol(['Administrador']), inventarioController.crearTanque);
+router.get('/', verificarRol(['Administrador']), inventarioController.listarTanques);
+router.put('/:id', verificarRol(['Administrador']), inventarioController.actualizarTanque);
 
 module.exports = router;

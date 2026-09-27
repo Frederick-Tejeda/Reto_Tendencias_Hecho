@@ -5,9 +5,9 @@ body:
   type: json
   content: |-
     {
-        "role": "Auditor",
+        "rol": "Auditor",
         "data": {
-            "email": "Auditor@email.com",
+            "correo": "Auditor@email.com",
             "password": "Auditor",
             "name": "Nombre Auditor"
         }

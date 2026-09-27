@@ -119,8 +119,33 @@ const anularTicket = async (req, res) => {
     }
 };
 
+const listarTicketPorIdEmpleado = async (req, res) => {
+    const { idEmpleado } = req.params;
+
+    if(isNaN(Number(idEmpleado)) || Number(idEmpleado) <= 0) {
+        return res.status(400).json({ success: false, message: 'ID de empleado es requerido' });
+    }
+
+    try {
+        let queryValidateEmpleado = `SELECT 1 FROM empleados WHERE id_empleado = $1`;
+        const validateEmpleadoResult = await db.query(queryValidateEmpleado, [idEmpleado]);
+        
+        if(validateEmpleadoResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Empleado no encontrado' });
+        }
+
+        let query = `SELECT id_ticket as uuid, secuencia as "sequentialId", fecha_vencimiento as "expirationDate", estado as status FROM tickets WHERE id_empleado = $1 ORDER BY fecha_creacion DESC`;
+        
+        const result = await db.query(query, [idEmpleado]);
+        res.status(200).json({ success: true, data: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al consultar tickets' });
+    }
+};
+
 module.exports = {
     emitirTicket,
     listarTickets,
-    anularTicket
+    anularTicket,
+    listarTicketPorIdEmpleado
 };

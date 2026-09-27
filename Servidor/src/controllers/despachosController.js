@@ -81,6 +81,81 @@ const registrarDespacho = async (req, res) => {
     }
 };
 
+// 4.x Validación previa de Ticket QR (RF-12, RF-13)
+const validarTicketQR = async (req, res) => {
+    const { ticketUuid, qrPayloadHash } = req.body;
+
+    try {
+        // Consultar el ticket uniendo datos del empleado y vehículo para la confirmación visual
+        const query = `
+            SELECT t.id_ticket, t.estado, t.fecha_vencimiento, t.cantidad_autorizada, t.tipo_combustible,
+                   e.nombre_completo AS empleado, e.cedula,
+                   v.placa, v.ficha_interna, v.marca, v.modelo
+            FROM tickets t
+            JOIN empleados e ON t.id_empleado = e.id_empleado
+            JOIN vehiculos v ON t.id_vehiculo = v.id_vehiculo
+            WHERE t.id_ticket = $1 AND t.qr_hash = $2
+        `;
+        
+        // Usamos db.pool.query para una lectura simple sin necesidad de bloquear con transacción
+        const result = await db.pool.query(query, [ticketUuid, qrPayloadHash]);
+
+        // 1. Validar existencia y hash
+        if (result.rowCount === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Código QR inválido. No se encontró un ticket que coincida con esta firma.' 
+            });
+        }
+
+        const ticket = result.rows[0];
+
+        // 2. Validar estado
+        const estadosValidos = ['Creado', 'Enviado', 'Pendiente', 'Próximo a vencer'];
+        if (!estadosValidos.includes(ticket.estado)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `El ticket no puede ser despachado. Estado actual: ${ticket.estado}` 
+            });
+        }
+
+        // 3. Validar fecha de vencimiento
+        if (new Date() > new Date(ticket.fecha_vencimiento)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'El ticket ha expirado y no es válido para despacho.' 
+            });
+        }
+
+        // 4. Retornar los datos para la confirmación en la app móvil
+        res.status(200).json({
+            success: true,
+            message: 'Ticket válido y listo para despacho.',
+            data: {
+                ticketUuid: ticket.id_ticket,
+                employee: {
+                    name: ticket.empleado,
+                    idCard: ticket.cedula
+                },
+                vehicle: {
+                    plate: ticket.placa,
+                    internalCode: ticket.ficha_interna,
+                    description: `${ticket.marca} ${ticket.modelo}`
+                },
+                dispatchDetails: {
+                    authorizedGallons: parseFloat(ticket.cantidad_autorizada),
+                    fuelType: ticket.tipo_combustible
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al validar ticket QR:', error);
+        res.status(500).json({ success: false, message: 'Error interno al validar el código QR.' });
+    }
+};
+
 module.exports = {
-    registrarDespacho
+    registrarDespacho,
+    validarTicketQR
 };

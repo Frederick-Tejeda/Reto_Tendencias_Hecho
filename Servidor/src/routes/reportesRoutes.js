@@ -7,15 +7,15 @@ const { registrarAuditoria } = require('../middlewares/trazabilidadMiddleware');
 router.use(verificarToken);
 
 // Dashboard (Solo lectura, no requiere registro de auditoría transaccional)
-router.get('/dashboard/summary', reportesController.obtenerDashboard);
+router.get('/dashboard/summary', verificarRol(['Administrador', 'Auditor']), reportesController.obtenerDashboard);
 
 // Reportes (Solo lectura)
-router.get('/reports/general', reportesController.generarReporteGeneral);
+router.get('/reports/general', verificarRol(['Administrador', 'Auditor']), reportesController.generarReporteGeneral);
 
 // Cierre Diario (Requiere auditoría por ser un proceso de consolidación)
 router.post(
     '/reports/daily-close', 
-    verificarRol(['Administrador', 'Supervisor', 'Despachador']), 
+    verificarRol(['Despachador']), 
     registrarAuditoria('EJECUTAR_CIERRE_DIARIO', 'cierres_diarios'), // Inyección del Middleware RF-21
     reportesController.generarCierreDiario
 );

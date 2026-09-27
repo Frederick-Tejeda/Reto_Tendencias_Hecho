@@ -184,10 +184,16 @@ const registrarRecepcion = async (req, res) => {
 
 // 4.3 Ajustes Manuales de Inventario (RF-14)
 const ajustarInventario = async (req, res) => {
-    const { adjustmentType, volumeGal, reason, authorizedBy } = req.body;
+    // 1. Extraer los datos requeridos, incluyendo tankId y stationId
+    const { tankId, stationId, adjustmentType, volumeGal, reason, authorizedBy } = req.body;
     
-    // Si la API no envía el tanque, asumimos por defecto el tanque principal (id=1)
-    const tankId = req.body.tankId || 1; 
+    // Validación inicial para evitar que el request pase si faltan datos clave
+    if (!tankId || !stationId || !adjustmentType || !volumeGal) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Faltan parámetros requeridos: tankId, stationId, adjustmentType o volumeGal.' 
+        });
+    }
     
     // Determinar si sumamos o restamos al inventario
     const factor = adjustmentType === 'Negativo' ? -parseFloat(volumeGal) : parseFloat(volumeGal);
@@ -201,7 +207,21 @@ const ajustarInventario = async (req, res) => {
     try {
         await cliente.query('BEGIN');
 
-        // 1. Actualizar la existencia en el tanque
+        // 2. Validar que el tanque existe y PERTENECE a la estación indicada
+        const tanqueValido = await cliente.query(
+            `SELECT id_tanque FROM inventario WHERE id_tanque = $1 AND id_estacion = $2`,
+            [tankId, stationId]
+        );
+
+        if (tanqueValido.rowCount === 0) {
+            await cliente.query('ROLLBACK');
+            return res.status(400).json({ 
+                success: false, 
+                message: `El tanque ${tankId} no existe o no pertenece a la estación ${stationId}.` 
+            });
+        }
+
+        // 3. Actualizar la existencia en el tanque
         const invResult = await cliente.query(
             `UPDATE inventario 
              SET existencia_actual = existencia_actual + $1 
@@ -210,13 +230,7 @@ const ajustarInventario = async (req, res) => {
             [factor, tankId]
         );
 
-        if (invResult.rowCount === 0) {
-            await cliente.query('ROLLBACK');
-            return res.status(404).json({ success: false, message: 'Tanque no encontrado.' });
-        }
-
-        // 2. Registrar en el historial de movimientos
-        // (Nota: factura y id_suplidor van como NULL porque es un ajuste interno)
+        // 4. Registrar en el historial de movimientos
         await cliente.query(
             `INSERT INTO movimientos_inventario 
              (id_tanque, tipo_movimiento, volumen, observaciones, id_usuario, fecha_hora) 
@@ -224,16 +238,16 @@ const ajustarInventario = async (req, res) => {
             [tankId, dbType, volumeGal, reason, id_usuario]
         );
 
-        // 3. Trazabilidad en Auditoría
+        // 5. Trazabilidad en Auditoría
         await cliente.query(
             `INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
              VALUES ($1, 'AJUSTE_INVENTARIO', 'inventario', $2)`, 
-            [id_usuario, `Ajuste ${adjustmentType}: ${volumeGal} galones. Razón: ${reason}`]
+            [id_usuario, `Ajuste ${adjustmentType}: ${volumeGal} galones en tanque ${tankId} (Estación ${stationId}). Razón: ${reason}`]
         );
 
         await cliente.query('COMMIT');
 
-        // 4. Respuesta cumpliendo con el contrato del frontend
+        // 6. Respuesta cumpliendo con el contrato del frontend
         res.status(200).json({
             success: true,
             data: { 

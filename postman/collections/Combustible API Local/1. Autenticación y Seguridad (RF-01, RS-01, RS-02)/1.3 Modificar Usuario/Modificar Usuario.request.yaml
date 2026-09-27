@@ -8,8 +8,8 @@ body:
   content: |-
     {
         "data": { 
-            "email": "Supervisor@email.com", 
-            "role": "Supervisor" 
+            "correo": "Supervisor@email.com", 
+            "rol": "Supervisor" 
         }
     }
 order: 1790177350780

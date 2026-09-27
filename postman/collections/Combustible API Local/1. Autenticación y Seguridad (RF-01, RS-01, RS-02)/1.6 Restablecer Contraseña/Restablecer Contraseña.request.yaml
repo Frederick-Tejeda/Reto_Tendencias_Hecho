@@ -2,12 +2,12 @@ $kind: http-request
 url: "{{base_url}}/admin/users/:id/reset-password"
 method: POST
 pathVariables:
-  id: "2"
+  id: "1"
 body:
   type: json
   content: |-
     { 
-        "newPassword": "Supervisor", 
+        "newPassword": "Administrador", 
         "requireChangeOnNextLogin":true 
     }
 order: 1790177705812

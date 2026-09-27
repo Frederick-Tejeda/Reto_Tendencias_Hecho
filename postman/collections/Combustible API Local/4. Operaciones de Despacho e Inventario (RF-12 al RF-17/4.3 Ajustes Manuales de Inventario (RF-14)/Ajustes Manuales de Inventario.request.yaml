@@ -5,9 +5,15 @@ body:
   type: json
   content: |-
     {
+        "tankId": 1, 
+        "stationId": 1,
         "adjustmentType": "Negativo",
         "volumeGal": 15.2,
         "reason": "Merma detectada en medición física",
-        "authorizedBy": 3
+        "authorizedBy": 2
     }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 1790202395628

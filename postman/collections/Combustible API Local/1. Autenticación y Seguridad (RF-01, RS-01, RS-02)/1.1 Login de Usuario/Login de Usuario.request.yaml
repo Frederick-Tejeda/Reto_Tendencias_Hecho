@@ -5,8 +5,8 @@ body:
   type: json
   content: |-
     {     
-        "email": "admin_intec",     
-        "password": "Intec2026*" 
+        "correo": "Administrador@email.com",     
+        "password": "Administrador" 
     }
 scripts:
   - type: afterResponse
