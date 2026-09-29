@@ -117,10 +117,21 @@ const generarReporteGeneral = async (req, res) => {
 // ==========================================
 const generarCierreDiario = async (req, res) => {
     // 1. Ahora también recibimos el stationId
-    const { date, dispatcherId, stationId } = req.body;
+    const { date } = req.body;
+
+    // Extracción segura desde el token JWT
+    const dispatcherId = req.usuario.id_usuario;
+    const stationId = req.usuario.id_estacion;
 
     if (!date || !dispatcherId || !stationId) {
         return res.status(400).json({ success: false, message: 'Faltan parámetros: date, dispatcherId, stationId' });
+    }
+
+    if (!stationId) {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Acceso denegado: Tu usuario no tiene una estación asignada para realizar el cierre.' 
+        });
     }
 
     // 2. Usar cliente dedicado para la transacción (Corregido)

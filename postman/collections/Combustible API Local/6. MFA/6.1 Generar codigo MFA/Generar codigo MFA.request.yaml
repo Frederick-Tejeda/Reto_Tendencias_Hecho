@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{base_url}}/mfa/generate"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1790698288125

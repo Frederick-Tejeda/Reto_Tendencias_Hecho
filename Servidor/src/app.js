@@ -23,6 +23,10 @@ const estacionesRoutes = require('./routes/estacionesRoutes');
 const suplidoresRoutes = require('./routes/suplidoresRoutes');
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 const reportesRoutes = require('./routes/reportesRoutes');
+// 6. MFA
+const MFARoutes = require('./routes/MFARoutes')
+// 6. SendTicket
+//const sendTicketRoutes = require('./routes/sendTicketRoutes')
 
 const app = express();
 
@@ -48,6 +52,10 @@ app.use('/api/v1/stations', estacionesRoutes);
 app.use('/api/v1/suppliers', suplidoresRoutes);
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 app.use('/api/v1', reportesRoutes);
+// 6. MFA
+app.use('/api/v1/mfa', MFARoutes);
+// 7. Envio de Tickets (RF-09)
+//app.use('/api/v1/send', sendTicket);
 
 // Ruta de prueba (Healthcheck)
 app.get('/api/v1/health', (req, res) => {

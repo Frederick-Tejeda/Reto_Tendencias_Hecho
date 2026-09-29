@@ -4,10 +4,9 @@ const employeesController = require('../controllers/employeesController');
 const { verificarToken, verificarRol } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken); // Asumiendo que requieres auth para todos
-router.use(verificarRol(['Administrador'])); // Asumiendo que solo administradores pueden crear/modificar empleados
 
-router.post('/', employeesController.crearEmpleado);
-router.get('/', employeesController.listarEmpleados);
-router.put('/:id', employeesController.modificarEmpleado);
+router.post('/', verificarRol(['Administrador']), employeesController.crearEmpleado);
+router.get('/', verificarRol(['Administrador', 'Supervisor']), employeesController.listarEmpleados);
+router.put('/:id', verificarRol(['Administrador']), employeesController.modificarEmpleado);
 
 module.exports = router;

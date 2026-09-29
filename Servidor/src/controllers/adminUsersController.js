@@ -4,8 +4,11 @@ const bcrypt = require('bcrypt'); // Asegúrate de tenerlo instalado: pnpm add b
 // 1.2 Creación de Usuario
 const crearUsuario = async (req, res) => {
     const { rol, data } = req.body;
-    const { correo, password, name, id_empleado } = data;
+    const { correo, password, name, id_empleado, id_estacion } = data;
     const id_usuario_creador = req.usuario.id_usuario;
+
+    const id_empleadoInt = Number(id_empleado);
+    const id_estacionInt = Number(id_estacion);
 
     const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante']
 
@@ -15,11 +18,18 @@ const crearUsuario = async (req, res) => {
         return res.status(400).json({ success: false, message: 'El rol Solicitante requiere un id_empleado vinculado.' });
     }
 
-    if(id_empleado){
-         const result = await db.query(
+    if(id_empleado && id_empleadoInt > 0){
+         const resultEmpleado = await db.query(
             `SELECT 1 FROM empleados WHERE id_empleado = $1`,
-            [id_empleado]);
-        if(result.rows.length == 0) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el id_empleado sea correcto.' })
+            [id_empleadoInt]);
+        if(resultEmpleado.rows.length == 0) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el id_empleado sea correcto.' })
+    }
+
+    if(id_estacion && id_estacionInt > 0){
+         const resultEstacion = await db.query(
+            `SELECT 1 FROM estaciones WHERE id_estacion = $1`,
+            [id_estacionInt]);
+        if(resultEstacion.rows.length == 0) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el id_empleado sea correcto.' })
     }
 
     const cliente = await db.pool.connect();
@@ -33,9 +43,9 @@ const crearUsuario = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const result = await cliente.query(
-            `INSERT INTO usuarios (correo, password_hash, rol, nombre_completo, id_empleado) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING id_usuario, nombre_completo, rol`,
-            [correo, passwordHash, rol, name, id_empleado || null]
+            `INSERT INTO usuarios (correo, password_hash, rol, nombre_completo, id_empleado, id_estacion) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_usuario, nombre_completo, rol`,
+            [correo, passwordHash, rol, name, id_empleado || null, id_estacion || null]
         );
 
         const newUser = result.rows[0];
@@ -61,7 +71,7 @@ const crearUsuario = async (req, res) => {
     } catch (error) {
         await cliente.query('ROLLBACK');
         console.error('Error al crear usuario:', error);
-        res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el correo no esté duplicado.' });
+        res.status(500).json({ success: false, message: 'Error al crear el usuario. Verifica que el correo no esté duplicado.' });
     } finally {
         // Liberar el cliente al pool
         cliente.release();
@@ -72,29 +82,37 @@ const crearUsuario = async (req, res) => {
 const modificarUsuario = async (req, res) => {
     const { id } = req.params;
     const { data } = req.body;
-    const { correo, rol, id_empleado } = data;
+    const { correo, rol, id_empleado, id_estacion } = data;
     const id_usuario_modificador = req.usuario.id_usuario;
 
     const id_empleadoInt = Number(id_empleado);
+    const id_estacionInt = Number(id_estacion);
 
     const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante']
 
     if(!rolesPermitidos.includes(rol)) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el rol sea correcto.' })
 
     if(id_empleado && id_empleadoInt > 0){
-         const result = await db.query(
+         const resultEmpleado = await db.query(
             `SELECT 1 FROM empleados WHERE id_empleado = $1`,
             [id_empleadoInt]);
-        if(result.rows.length == 0) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el id_empleado sea correcto.' })
+        if(resultEmpleado.rows.length == 0) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el id_empleado sea correcto.' })
+    }
+
+    if(id_estacion && id_estacionInt > 0){
+         const resultEstacion = await db.query(
+            `SELECT 1 FROM estaciones WHERE id_estacion = $1`,
+            [id_estacionInt]);
+        if(resultEstacion.rows.length == 0) res.status(400).json({ success: false, message: 'Error al modificar el usuario. Verifica que el id_empleado sea correcto.' })
     }
 
     const cliente = await db.pool.connect();
 
     try {
         await cliente.query(
-            `UPDATE usuarios SET correo = COALESCE($1, correo), rol = COALESCE($2, rol), id_empleado = COALESCE($3, id_empleado)
-             WHERE id_usuario = $4`,
-            [correo, rol, (id_empleadoInt > 0) ? id_empleadoInt : null, id]
+            `UPDATE usuarios SET correo = COALESCE($1, correo), rol = COALESCE($2, rol), id_empleado = COALESCE($3, id_empleado), 
+            id_estacion = COALESCE($5, id_estacion) WHERE id_usuario = $4`,
+            [correo, rol, (id_empleadoInt > 0) ? id_empleadoInt : null, id, (id_estacionInt > 0) ? id_estacionInt : null]
         );
 
         // Registro de Auditoría
@@ -163,13 +181,14 @@ const listarUsuarios = async (req, res) => {
     try {
         // En una implementación completa, aquí extraerías page y limit de req.query para el offset
         const result = await db.query(
-            `SELECT id_usuario, id_empleado, nombre_completo, correo, rol, estado 
+            `SELECT id_usuario, id_empleado, id_estacion, nombre_completo, correo, rol, estado 
              FROM usuarios ORDER BY id_usuario DESC`
         );
 
         const formatedData = result.rows.map(user => ({
             id_usuario: String(user.id_usuario),
             id_empleado: String(user.id_empleado),
+            id_estacion: String(user.id_estacion),
             name: user.nombre_completo,
             correo: user.correo,
             rol: user.rol,

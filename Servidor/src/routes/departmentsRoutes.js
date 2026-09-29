@@ -4,10 +4,9 @@ const departmentsController = require('../controllers/departmentsController');
 const { verificarToken, verificarRol } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken);
-router.use(verificarRol(['Administrador'])); // Asumiendo que solo administradores pueden crear/modificar departamentos
 
-router.post('/', departmentsController.crearDepartamento);
-router.get('/', departmentsController.listarDepartamentos);
-router.put('/:id', departmentsController.modificarDepartamento);
+router.post('/', verificarRol(['Administrador']), departmentsController.crearDepartamento);
+router.get('/', verificarRol(['Administrador', 'Supervisor']), departmentsController.listarDepartamentos);
+router.put('/:id', verificarRol(['Administrador']), departmentsController.modificarDepartamento);
 
 module.exports = router;

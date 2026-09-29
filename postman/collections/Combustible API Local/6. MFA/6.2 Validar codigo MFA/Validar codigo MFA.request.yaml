@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{base_url}}/mfa/validate"
+method: POST
+body:
+  type: json
+  content: '{ "codigo": "159682" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1790698296954

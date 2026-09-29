@@ -8,7 +8,7 @@ const login = async (req, res) => {
     try {
         // 1. Buscar al usuario en la base de datos
         const result = await db.query(
-            'SELECT id_usuario, correo, password_hash, rol, id_empleado, estado FROM usuarios WHERE correo = $1',
+            'SELECT id_usuario, correo, password_hash, rol, id_empleado, id_estacion, estado FROM usuarios WHERE correo = $1',
             [correo]
         );
 
@@ -33,7 +33,8 @@ const login = async (req, res) => {
                 id_usuario: usuario.id_usuario, 
                 correo: usuario.correo,
                 rol: usuario.rol,
-                id_empleado: usuario.id_empleado
+                id_empleado: usuario.id_empleado,
+                id_estacion: user.id_estacion,
             },
             process.env.JWT_SECRET,
             { expiresIn: '8h' } // La sesión durará 8 horas

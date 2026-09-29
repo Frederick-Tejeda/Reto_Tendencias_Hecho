@@ -8,11 +8,11 @@ const {
 const { verificarToken, verificarRol } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken); // Asumiendo que requieres auth para todos
-router.use(verificarRol(['Administrador'])); // Asumiendo que solo administradores y supervisores pueden crear/modificar estaciones
+//router.use(verificarRol(['Administrador'])); // Asumiendo que solo administradores y supervisores pueden crear/modificar estaciones
 
 // Rutas base: /api/v1/estaciones
-router.post('/', crearEstacion);
-router.get('/', listarEstaciones);
-router.put('/:id', actualizarEstacion);
+router.post('/', verificarRol(['Administrador']), crearEstacion);
+router.get('/', verificarRol(['Administrador', 'Supervisor']), listarEstaciones);
+router.put('/:id', verificarRol(['Administrador']), actualizarEstacion);
 
 module.exports = router;

@@ -30,7 +30,7 @@ router.get(
 );
 
 router.post('/', verificarRol(['Administrador']), inventarioController.crearTanque);
-router.get('/', verificarRol(['Administrador']), inventarioController.listarTanques);
+router.get('/', verificarRol(['Administrador', 'Supervisor']), inventarioController.listarTanques);
 router.put('/:id', verificarRol(['Administrador']), inventarioController.actualizarTanque);
 
 module.exports = router;
