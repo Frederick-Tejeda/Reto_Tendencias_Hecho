@@ -8,7 +8,6 @@ const {
 const { verificarToken, verificarRol } = require('../middlewares/authMiddleware');
 
 router.use(verificarToken); // Asumiendo que requieres auth para todos
-router.use(verificarRol(['Administrador'])); // Asumiendo que solo administradores pueden crear/modificar suplidores
 
 router.post('/', verificarRol(['Administrador']), crearSuplidor);
 router.get('/', verificarRol(['Administrador', 'Supervisor']), listarSuplidores);

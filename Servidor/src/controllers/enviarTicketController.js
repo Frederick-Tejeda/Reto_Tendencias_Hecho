@@ -9,13 +9,16 @@ const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_A
 
 const enviarTicket = async (req, res) => {
     const { ticketId } = req.params;
-    const { destinatarioEmail, numeroTelefono } = req.body;
 
     try {
 
         const ticketInfo = await db.query('SELECT * FROM tickets WHERE id_ticket=$1', [ticketId])
-
         if(ticketInfo.rows.length == 0) res.status(400).send({success: false, message: "El id del ticket provisto no es valido"});
+
+        const resultQuery = db.await('SELECT correo, telefono_movil FROM empleados WHERE id_empleado=$1', [ticketInfo.rows[0].id_empleado])
+        if(resultQuery.rows.length == 0) res.status(400).json({success: false, message: "El id_empleado del ticket provisto no funciona debidamente"});
+
+        const [destinatarioEmail, numeroTelefono] = [resultQuery.rows[0].correo, resultQuery.rows[0].telefono_movil]
 
         // 1. Agrupar los datos exigidos por el RF-07 en el payload
         const payloadQR = {
