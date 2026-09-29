@@ -19,14 +19,18 @@ const enviarTicket = async (req, res) => {
 
         // 1. Agrupar los datos exigidos por el RF-07 en el payload
         const payloadQR = {
-            ticketId: ticketInfo.rows[0].idTicket,
+            ticketId: ticketInfo.rows[0].id_ticket,
             secuencia: ticketInfo.rows[0].secuencia,
             solicitudId: ticketInfo.rows[0].id_solicitud,
             empleadoId: ticketInfo.rows[0].id_empleado,
             vehiculoId: ticketInfo.rows[0].id_vehiculo,
-            cantidad: ticketInfo.rows[0].id_departamento,
-            fechaEmision: ticketInfo.rows[0].fechaEmision,
-            fechaExpiracion: ticketInfo.rows[0].fechaExpiracion
+            departamentoId: ticketInfo.rows[0].id_departamento,
+            cantidadAutorizada: ticketInfo.rows[0].cantidad_autorizada,
+            tipoCombustible: ticketInfo.rows[0].tipo_combustible,
+            fechaCreacion: ticketInfo.rows[0].fecha_creacion,
+            fechaVencimiento: ticketInfo.rows[0].fecha_vencimiento,
+            qrHash: ticketInfo.rows[0].qr_hash,
+            estado: ticketInfo.rows[0].estado,
         };
 
         // 2. Firmar los datos creando un token de validación con hash SHA-256 (RS-04)
@@ -38,7 +42,7 @@ const enviarTicket = async (req, res) => {
         const qrBase64 = await QRCode.toDataURL(tokenFirmado);
 
         // Envío de correo usando Resend (optimizado para Serverless)
-        const base64Data = ticketInfo.rows[0].qr_hash.split(';base64,').pop();
+        const base64Data = qrBase64.split(';base64,').pop();
         await resend.emails.send({
             from: 'Gestión INTEC <onboarding@resend.dev>',
             to: destinatarioEmail,

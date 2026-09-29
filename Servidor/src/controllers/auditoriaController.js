@@ -17,7 +17,7 @@ const obtenerAuditoria = async (req, res) => {
         // Base de la consulta
         let query = `
             SELECT a.id_auditoria, a.accion, a.tabla_afectada, a.detalles, 
-                   a.direccion_ip, a.fecha_hora, u.username, u.rol
+                   a.direccion_ip, a.fecha_hora, u.nombre_completo, u.rol
             FROM auditoria_trazabilidad a
             LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
             WHERE 1=1
