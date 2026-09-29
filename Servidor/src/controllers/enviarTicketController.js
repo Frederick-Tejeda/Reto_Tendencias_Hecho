@@ -13,7 +13,7 @@ const enviarTicket = async (req, res) => {
 
     try {
 
-        const ticketInfo = await db.query('SELECT * FROM ticket WHERE id_ticket=$1', [ticketId])
+        const ticketInfo = await db.query('SELECT * FROM tickets WHERE id_ticket=$1', [ticketId])
 
         if(ticketInfo.rows.length == 0) res.status(400).send({success: false, message: "El id del ticket provisto no es valido"});
 

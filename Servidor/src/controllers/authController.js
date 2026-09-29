@@ -34,7 +34,7 @@ const login = async (req, res) => {
                 correo: usuario.correo,
                 rol: usuario.rol,
                 id_empleado: usuario.id_empleado,
-                id_estacion: user.id_estacion,
+                id_estacion: usuario.id_estacion,
             },
             process.env.JWT_SECRET,
             { expiresIn: '8h' } // La sesión durará 8 horas
@@ -49,6 +49,7 @@ const login = async (req, res) => {
                     id: usuario.id_usuario,
                     id_empleado: usuario.id_empleado,
                     correo: usuario.correo,
+                    name: usuario.nombre_completo,
                     role: usuario.rol
                 }
             }

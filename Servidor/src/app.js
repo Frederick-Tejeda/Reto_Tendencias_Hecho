@@ -23,6 +23,7 @@ const estacionesRoutes = require('./routes/estacionesRoutes');
 const suplidoresRoutes = require('./routes/suplidoresRoutes');
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 const reportesRoutes = require('./routes/reportesRoutes');
+const auditoriaRoutes = require('./routes/auditoriaRoutes');
 // 6. MFA
 const MFARoutes = require('./routes/MFARoutes')
 // 6. SendTicket
@@ -52,6 +53,7 @@ app.use('/api/v1/stations', estacionesRoutes);
 app.use('/api/v1/suppliers', suplidoresRoutes);
 // 5. Cierre, Auditoría y Reportes (RF-18, RF-19, RF-21, RF-22)
 app.use('/api/v1', reportesRoutes);
+app.use('/api/v1/audit', auditoriaRoutes);
 // 6. MFA
 app.use('/api/v1/mfa', MFARoutes);
 // 7. Envio de Tickets (RF-09)
