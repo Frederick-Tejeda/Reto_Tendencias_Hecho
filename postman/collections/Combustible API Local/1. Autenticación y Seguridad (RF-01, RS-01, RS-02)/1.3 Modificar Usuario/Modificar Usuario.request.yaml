@@ -2,15 +2,15 @@ $kind: http-request
 url: "{{base_url}}/admin/users/:id"
 method: PUT
 pathVariables:
-  id: "2"
+  id: "3"
 body:
   type: json
   content: |-
     {
         "data": { 
-            "correo": "Supervisor@email.com", 
-            "rol": "Supervisor",
-            "id_empleado": 8
+            "correo": "Despachador@email.com", 
+            "rol": "Despachador",
+            "id_estacion": 2
         }
     }
 order: 1790177350780
