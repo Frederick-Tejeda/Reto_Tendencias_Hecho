@@ -14,7 +14,7 @@ router.post(
 
 router.get(
     '/', 
-    verificarRol(['Supervisor']), 
+    verificarRol(['Supervisor', 'Administrador', 'Solicitante']), 
     solicitudesController.listarSolicitudes
 );
 

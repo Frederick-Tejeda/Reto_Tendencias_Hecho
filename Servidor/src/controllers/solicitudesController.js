@@ -59,8 +59,16 @@ const crearSolicitud = async (req, res) => {
 
 // Listar Solicitudes
 const listarSolicitudes = async (req, res) => {
+
+    const { id_empleado } = req.usuario.id_empleado
+    const params = []
+
     try {
-        const query = `
+
+        const resultQuery = await db.query('SELECT u.rol as rol FROM usuarios u INNER JOIN empleados e ON u.id_empleado = e.id_empleado');
+        if(resultQuery.rows.length == 0) res.status(400).json({success: false, message: "Revisa el id_empleado provisto"})
+
+        let query = `
             SELECT 
                 s.id_solicitud AS "requestId", 
                 e.nombre_completo AS "employeeName", 
@@ -69,11 +77,16 @@ const listarSolicitudes = async (req, res) => {
                 s.estado AS "status"
             FROM solicitudes s
             JOIN empleados e ON s.id_empleado = e.id_empleado
-            JOIN vehiculos v ON s.id_vehiculo = v.id_vehiculo
-            ORDER BY s.fecha_solicitud DESC
-        `;
+            JOIN vehiculos v ON s.id_vehiculo = v.id_vehiculo`;
+
+        if(resultQuery.rows[0].rol == "Solicitante"){
+            query += ' WHERE s.id_empleado=$1 ORDER BY s.fecha_solicitud DESC';
+            params.push(id_empleado)
+        }else{
+            query += ' ORDER BY s.fecha_solicitud DESC'
+        }
         
-        const result = await db.query(query);
+        const result = await db.query(query, params);
 
         res.status(200).json({
             success: true,
