@@ -25,10 +25,10 @@ const listarVehiculos = async (req, res) => {
                 v.modelo as model,
                 v.anio as year,
                 v.tipo as type,
-                d.id_departamento as department
+                d.id_departamento as department,
                 v.capacidad_tanque as tanque,
-                v.kilometros as odometerKm
-                v.estado as status,
+                v.kilometros as odometerKm,
+                v.estado as status
             FROM vehiculos v
             LEFT JOIN departamentos d ON v.id_departamento = d.id_departamento
             ORDER BY v.id_vehiculo DESC;
