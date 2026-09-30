@@ -387,7 +387,7 @@ function Vehiculos() {
       departmentId: Number(formulario.departmentId),
       tankCapacityGal: Number(formulario.tankCapacityGal),
       odometerKm: Number(formulario.odometerKm),
-      status: formulario.status,
+      status: (formulario.status.toLowerCase() == 'Activo') ? true : false,
     }
 
     try {
@@ -467,15 +467,10 @@ function Vehiculos() {
       obtenerEstado(vehiculo).toLowerCase() === 'activo'
   ).length
 
-  const enReparacion = vehiculos.filter((vehiculo) => {
-    const estado = obtenerEstado(vehiculo).toLowerCase()
-
-    return (
-      estado.includes('reparación') ||
-      estado.includes('reparacion') ||
-      estado.includes('mantenimiento')
-    )
-  }).length
+  const Inactivo = vehiculos.filter(
+    (vehiculo) =>
+      obtenerEstado(vehiculo).toLowerCase() === 'inactivo'
+  ).length
 
   return (
     <AdminLayout>
@@ -549,11 +544,11 @@ function Vehiculos() {
 
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
             <p className="text-sm text-slate-500">
-              En reparación / mantenimiento
+              Inactivo
             </p>
 
             <p className="text-3xl font-bold text-amber-600 mt-2">
-              {cargando ? '-' : enReparacion}
+              {cargando ? '-' : Inactivo}
             </p>
           </div>
         </div>
@@ -1007,10 +1002,6 @@ function Vehiculos() {
 
                     <option value="Inactivo">
                       Inactivo
-                    </option>
-
-                    <option value="En Reparación">
-                      En Reparación
                     </option>
                   </select>
                 </div>
