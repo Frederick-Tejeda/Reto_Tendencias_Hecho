@@ -50,7 +50,8 @@ const login = async (req, res) => {
                     id_empleado: usuario.id_empleado,
                     correo: usuario.correo,
                     name: usuario.nombre_completo,
-                    role: usuario.rol
+                    role: usuario.rol,
+                    mfa_required: usuario.mfa_required
                 }
             }
         });
