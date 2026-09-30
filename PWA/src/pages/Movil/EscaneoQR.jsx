@@ -9,12 +9,10 @@ function EscaneoQR() {
   const [errorLectura, setErrorLectura] = useState('');
   const [verificando, setVerificando] = useState(false);
   
-  // Referencias para controlar el flujo sin depender de re-renders de React
   const procesandoRef = useRef(false);
   const scannerRef = useRef(null);
 
   const procesarQR = async (textoDecodificado) => {
-    // Evitamos peticiones simultáneas si ya estamos verificando un código
     if (procesandoRef.current) return;
     
     procesandoRef.current = true;
@@ -22,62 +20,75 @@ function EscaneoQR() {
     setErrorLectura('');
 
     try {
-      // 1. Extraemos el UUID y el Hash. Soporta QR en texto plano o formato JSON[cite: 7]
-      let ticketUuid = textoDecodificado;
+      let ticketUuid = '';
       let qrPayloadHash = '';
       
-      try {
-        const datosQR = JSON.parse(textoDecodificado);
-        ticketUuid = datosQR.uuid || datosQR.ticketUuid || textoDecodificado;
-        qrPayloadHash = datosQR.hash || datosQR.qrPayloadHash || '';
-      } catch (e) {
-        // Si falla el parseo, asumimos que el QR contiene únicamente el UUID en texto plano
+      // Adaptado para detectar tanto los nombres antiguos (token/qrhash) como los nuevos (ticketUuid/qrPayloadHash) en el texto del QR
+      if (textoDecodificado.includes('token=') || textoDecodificado.includes('ticketUuid=')) {
+        const tokenMatch = textoDecodificado.match(/(?:ticketUuid|token)=([^?&]+)/);
+        if (tokenMatch) ticketUuid = tokenMatch[1];
+        
+        const hashMatch = textoDecodificado.match(/(?:qrPayloadHash|qrhash|hash)=([^?&]+)/);
+        if (hashMatch) qrPayloadHash = hashMatch[1];
+      } else if (textoDecodificado.trim().startsWith('{')) {
+        try {
+          const datosQR = JSON.parse(textoDecodificado);
+          ticketUuid = datosQR.uuid || datosQR.ticketUuid || datosQR.token || '';
+          qrPayloadHash = datosQR.hash || datosQR.qrPayloadHash || datosQR.qrhash || datosQR.qr_hash || '';
+        } catch (e) {}
+      } 
+      
+      if (!ticketUuid) {
+        ticketUuid = textoDecodificado;
       }
 
-      // 2. Consultamos la API para validar la existencia del ticket[cite: 7]
-      const token = localStorage.getItem('fuelcontrol_token');
-      const response = await fetch(`${API_BASE_URL}/tickets`, {
+      if (!ticketUuid || !qrPayloadHash) {
+        throw new Error(`Faltan datos en el QR.\nLeído: "${textoDecodificado}"`);
+      }
+
+      const tokenStr = localStorage.getItem('fuelcontrol_token');
+      
+      // APLICANDO TU ESTRUCTURA DE URL EXACTA CON VARIABLES NUEVAS Y DOBLE (?)
+      const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${ticketUuid}?qrPayloadHash=${qrPayloadHash}`;
+
+      const response = await fetch(urlValidacion, {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${tokenStr}`,
           'Content-Type': 'application/json'
         }
       });
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("Error del servidor (No es JSON). Verifica la ruta de la API.");
+      }
+
       const result = await response.json();
 
-      if (result.success) {
-        // Buscamos si el UUID escaneado existe en la base de datos[cite: 7]
-        const ticketEncontrado = result.data.find(t => t.uuid === ticketUuid);
-
-        if (ticketEncontrado) {
-          // Si existe, detenemos el escáner de forma segura
-          if (scannerRef.current && scannerRef.current.isScanning) {
-            await scannerRef.current.stop();
-          }
-          
-          // Adjuntamos el hash de validación si el QR lo contenía, requerido para el Despacho[cite: 7]
-          if (qrPayloadHash) ticketEncontrado.qrPayloadHash = qrPayloadHash;
-
-          // Navegamos pasando el objeto completo para evitar una segunda consulta a la API
-          navigate(`/despacho/validar/${ticketUuid}`, { state: { ticket: ticketEncontrado } });
-          return; 
-        } else {
-          setErrorLectura('El código QR no corresponde a un ticket registrado o válido.');
+      if (response.ok && result.success) {
+        if (scannerRef.current && scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
         }
+        
+        const ticketEncontrado = result.data;
+        if (qrPayloadHash) ticketEncontrado.qrPayloadHash = qrPayloadHash;
+
+        navigate(`/despacho/validar/${ticketUuid}`, { state: { ticket: ticketEncontrado, hash: qrPayloadHash } });
+        return; 
       } else {
-        setErrorLectura('Error al consultar el servidor. Intente nuevamente.');
+        setErrorLectura(result.message || 'El servidor rechazó el ticket.');
       }
     } catch (error) {
       console.error('Error verificando ticket:', error);
-      setErrorLectura('Error de red al validar el código QR.');
+      setErrorLectura(error.message);
     }
 
-    // 3. Si el ticket no es válido, reiniciamos el estado tras 3 segundos para seguir escaneando
     setTimeout(() => {
       setErrorLectura('');
       setVerificando(false);
       procesandoRef.current = false;
-    }, 3000);
+    }, 5000); 
   };
 
   useEffect(() => {
@@ -88,6 +99,7 @@ function EscaneoQR() {
       { facingMode: 'environment' }, 
       {
         fps: 10,
+        // CONFIGURACIÓN ORIGINAL PARA QUE LA CÁMARA SE VEA BIEN EN MÓVIL
         qrbox: (viewfinderWidth, viewfinderHeight) => {
           const minEdgePercentage = 0.7;
           const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
@@ -96,7 +108,6 @@ function EscaneoQR() {
         }
       },
       (textoDecodificado) => {
-        // Ejecutamos la validación contra la API al detectar un código
         procesarQR(textoDecodificado);
       },
       (errorMensaje) => {
@@ -141,7 +152,6 @@ function EscaneoQR() {
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 pb-24 relative">
         
-        {/* Overlay de carga que bloquea la vista mientras se consulta la API */}
         {verificando && !errorLectura && (
           <div className="absolute inset-0 z-10 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center">
             <Loader2 size={48} className="text-blue-500 animate-spin mb-4" />

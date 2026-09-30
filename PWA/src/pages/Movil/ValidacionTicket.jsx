@@ -1,52 +1,58 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Fuel, User, Car, ArrowLeft, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../../App.jsx';
 
 function ValidacionTicket() {
   const navigate = useNavigate();
   const { qrData } = useParams(); 
+  const location = useLocation();
   
-  const [ticket, setTicket] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const [ticket, setTicket] = useState(location.state?.ticket || null);
+  const [cargando, setCargando] = useState(!location.state?.ticket);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (ticket) return;
+
     const validarTicket = async () => {
       try {
-        const token = localStorage.getItem('fuelcontrol_token');
-        
-        const response = await fetch(`${API_BASE_URL}/tickets`, {
+        const tokenStr = localStorage.getItem('fuelcontrol_token');
+        const hashDesdeState = location.state?.hash || '';
+
+        // APLICANDO TU ESTRUCTURA DE URL EXACTA CON VARIABLES NUEVAS Y DOBLE (?)
+        const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${qrData}?qrPayloadHash=${hashDesdeState}`;
+
+        const response = await fetch(urlValidacion, {
+          method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${tokenStr}`,
             'Content-Type': 'application/json'
           }
         });
 
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new TypeError("El servidor no devolvió JSON.");
+        }
+
         const result = await response.json();
 
-        if (result.success) {
-          const ticketEncontrado = result.data.find(
-            t => t.uuid === qrData || t.qrPayloadHash === qrData
-          );
-          
-          if (ticketEncontrado) {
-            setTicket(ticketEncontrado);
-          } else {
-            setError('Ticket no encontrado en el sistema o código QR inválido.');
-          }
+        if (response.ok && result.success) {
+          setTicket(result.data);
         } else {
-          setError(result.message || 'Error al conectar con el servidor.');
+          setError(result.message || 'Error del servidor: Posiblemente falta token/hash.');
         }
       } catch (err) {
-        setError('Error de red al validar el ticket.');
+        console.error('Error de red:', err);
+        setError(`Error al validar: ${err.message}`);
       } finally {
         setCargando(false);
       }
     };
 
     validarTicket();
-  }, [qrData]);
+  }, [qrData, ticket, location.state]);
 
   if (cargando) {
     return (
@@ -73,21 +79,13 @@ function ValidacionTicket() {
              <AlertCircle size={64} className="mb-4" />
              <h3 className="text-xl font-bold mb-2">Error de Validación</h3>
              <p className="font-medium text-slate-600">{error}</p>
-             <button
-                onClick={() => navigate('/escanear')}
-                className="w-full mt-8 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-4 rounded-xl transition-all"
-              >
+             <button onClick={() => navigate('/escanear')} className="w-full mt-8 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-4 rounded-xl transition-all">
                 Escanear otro código
               </button>
            </div>
         ) : (
           <>
-            {esValido ? (
-              <CheckCircle size={64} className="text-green-500 mb-4" />
-            ) : (
-              <XCircle size={64} className="text-red-500 mb-4" />
-            )}
-
+            {esValido ? <CheckCircle size={64} className="text-green-500 mb-4" /> : <XCircle size={64} className="text-red-500 mb-4" />}
             <h3 className="text-2xl font-bold text-slate-800 mb-1">{ticket?.sequentialId || 'Desconocido'}</h3>
             <span className={`text-sm font-bold px-3 py-1 rounded-full uppercase mb-6 ${esValido ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
               {ticket?.status || 'Inválido'}
@@ -101,7 +99,6 @@ function ValidacionTicket() {
                   <p className="font-medium">{ticket?.employeeName || 'No especificado'}</p>
                 </div>
               </div>
-              
               <div className="flex gap-4 items-center text-slate-700">
                 <div className="bg-slate-100 p-2 rounded-lg"><Car size={20} className="text-slate-500" /></div>
                 <div>
@@ -109,30 +106,21 @@ function ValidacionTicket() {
                   <p className="font-medium">{ticket?.vehicleCode || 'No especificado'}</p>
                 </div>
               </div>
-
               <div className="flex gap-4 items-center text-slate-700">
                 <div className="bg-blue-50 p-2 rounded-lg"><Fuel size={20} className="text-blue-600" /></div>
                 <div>
                   <p className="text-xs text-slate-400">Autorizado</p>
-                  <p className="font-bold text-blue-700">
-                    {ticket?.authorizedQuantityGal || 0} Galones ({ticket?.fuelType || 'N/A'})
-                  </p>
+                  <p className="font-bold text-blue-700">{ticket?.authorizedQuantityGal || 0} Galones ({ticket?.fuelType || 'N/A'})</p>
                 </div>
               </div>
             </div>
 
             {esValido ? (
-              <button
-                onClick={() => navigate(`/despacho/registrar/${ticket.uuid}`, { state: { ticket } })}
-                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all"
-              >
+              <button onClick={() => navigate(`/despacho/registrar/${ticket.uuid}`, { state: { ticket } })} className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
                 Proceder al Despacho
               </button>
             ) : (
-              <button
-                onClick={() => navigate('/escanear')}
-                className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-4 rounded-xl transition-all"
-              >
+              <button onClick={() => navigate('/escanear')} className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-4 rounded-xl transition-all">
                 Escanear otro código
               </button>
             )}
