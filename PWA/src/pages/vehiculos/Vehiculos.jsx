@@ -544,7 +544,7 @@ function Vehiculos() {
 
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
             <p className="text-sm text-slate-500">
-              Inactivo
+              Inactivos
             </p>
 
             <p className="text-3xl font-bold text-amber-600 mt-2">
