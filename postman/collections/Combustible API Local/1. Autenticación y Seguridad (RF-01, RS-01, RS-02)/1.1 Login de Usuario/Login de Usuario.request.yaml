@@ -9,10 +9,10 @@ body:
     //     "password": "Supervisor" 
     // }
 
-    // {     
-    //     "correo": "Solicitante@email.com",     
-    //     "password": "Solicitante" 
-    // }
+    {     
+        "correo": "Solicitante@email.com",     
+        "password": "Solicitante" 
+    }
 
     // {     
     //     "correo": "Administrador@email.com",     
@@ -24,10 +24,10 @@ body:
     //     "password": "Auditor" 
     // }
 
-    {     
-        "correo": "Despachador@email.com",     
-        "password": "Despachador" 
-    }
+    // {     
+    //     "correo": "Despachador@email.com",     
+    //     "password": "Despachador" 
+    // }
 
     // {     
     //     "correo": "ffrederf3@gmail.com",     

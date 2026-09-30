@@ -48,6 +48,9 @@ const validarMFA = async (req, res) => {
         const isValid = authenticator.check(codigo, userSecret);
 
         if (isValid) {
+
+            await db.query('UPDATE usuarios SET mfa_required=$1 WHERE id_usuario=$2', [true, req.usuario.id_usuario]);
+
             // 3. Si es válido, emitir el JWT final para las APIs (RS-05)[cite: 1]
             const apiToken = jwt.sign(
                 { 
