@@ -9,15 +9,15 @@ body:
     //     "password": "Supervisor" 
     // }
 
-    {     
-        "correo": "Solicitante@email.com",     
-        "password": "Solicitante" 
-    }
-
     // {     
-    //     "correo": "Administrador@email.com",     
-    //     "password": "Administrador" 
+    //     "correo": "Solicitante@email.com",     
+    //     "password": "Solicitante" 
     // }
+
+    {     
+        "correo": "Administrador@email.com",     
+        "password": "Administrador" 
+    }
 
     // {     
     //     "correo": "Auditor@email.com",     
