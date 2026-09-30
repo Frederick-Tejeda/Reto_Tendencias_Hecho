@@ -6,7 +6,7 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 router.use(verificarToken); // Asumiendo que requieres auth para todos
 
 router.post('/', verificarRol(['Administrador']), employeesController.crearEmpleado);
-router.get('/', verificarRol(['Administrador', 'Supervisor']), employeesController.listarEmpleados);
+router.get('/', verificarRol(['Administrador', 'Supervisor', 'Solicitante']), employeesController.listarEmpleados);
 router.put('/:id', verificarRol(['Administrador']), employeesController.modificarEmpleado);
 
 module.exports = router;
