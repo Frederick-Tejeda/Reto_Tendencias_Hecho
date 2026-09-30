@@ -33,6 +33,10 @@ body:
     //     "correo": "ffrederf3@gmail.com",     
     //     "password": "Administrador" 
     // }
+auth:
+  type: inherit
+  credentials:
+    id: 226ca155-96fa-4836-87b6-684e2fe5a20b
 scripts:
   - type: afterResponse
     code: |-

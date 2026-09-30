@@ -6,7 +6,7 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 router.use(verificarToken);
 
 router.post('/', verificarRol(['Administrador']), departmentsController.crearDepartamento);
-router.get('/', verificarRol(['Administrador', 'Supervisor']), departmentsController.listarDepartamentos);
+router.get('/', verificarRol(['Administrador', 'Supervisor', 'Solicitante']), departmentsController.listarDepartamentos);
 router.put('/:id', verificarRol(['Administrador']), departmentsController.modificarDepartamento);
 
 module.exports = router;
