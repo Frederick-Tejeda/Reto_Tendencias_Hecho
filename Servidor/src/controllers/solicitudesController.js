@@ -60,7 +60,7 @@ const crearSolicitud = async (req, res) => {
 // Listar Solicitudes
 const listarSolicitudes = async (req, res) => {
 
-    const { id_empleado } = req.usuario.id_empleado
+    const { id_empleado } = req.usuario
     const params = []
 
     try {
