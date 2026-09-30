@@ -21,8 +21,14 @@ const listarVehiculos = async (req, res) => {
                 v.id_vehiculo as id, 
                 v.placa as "licensePlate", 
                 v.ficha_interna as "internalCode",
-                d.nombre as department,
-                v.estado as status
+                v.marca as brand,
+                v.modelo as model,
+                v.anio as year,
+                v.tipo as type,
+                d.id_departamento as department
+                v.capacidad_tanque as tanque,
+                v.kilometros as odometerKm
+                v.estado as status,
             FROM vehiculos v
             LEFT JOIN departamentos d ON v.id_departamento = d.id_departamento
             ORDER BY v.id_vehiculo DESC;
