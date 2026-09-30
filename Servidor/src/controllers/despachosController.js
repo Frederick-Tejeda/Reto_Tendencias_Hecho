@@ -83,7 +83,9 @@ const registrarDespacho = async (req, res) => {
 
 // 4.x Validación previa de Ticket QR (RF-12, RF-13)
 const validarTicketQR = async (req, res) => {
-    const { ticketUuid, qrPayloadHash } = req.body;
+    const { ticketUuid, qrPayloadHash } = req.query;
+
+    if(!ticketUuid || !qrPayloadHash) res.status(400).json({success: false, message: "Falta el token o el hash"});
 
     try {
         // Consultar el ticket uniendo datos del empleado y vehículo para la confirmación visual

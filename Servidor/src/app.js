@@ -26,8 +26,8 @@ const reportesRoutes = require('./routes/reportesRoutes');
 const auditoriaRoutes = require('./routes/auditoriaRoutes');
 // 6. MFA
 const MFARoutes = require('./routes/MFARoutes')
-// 6. SendTicket
-//const sendTicketRoutes = require('./routes/sendTicketRoutes')
+// 7. SendTicket
+const sendTicketRoutes = require('./routes/sendTicketRoutes')
 
 const app = express();
 
@@ -57,7 +57,7 @@ app.use('/api/v1/audit', auditoriaRoutes);
 // 6. MFA
 app.use('/api/v1/mfa', MFARoutes);
 // 7. Envio de Tickets (RF-09)
-//app.use('/api/v1/send', sendTicket);
+app.use('/api/v1/send', sendTicketRoutes);
 
 // Ruta de prueba (Healthcheck)
 app.get('/api/v1/health', (req, res) => {

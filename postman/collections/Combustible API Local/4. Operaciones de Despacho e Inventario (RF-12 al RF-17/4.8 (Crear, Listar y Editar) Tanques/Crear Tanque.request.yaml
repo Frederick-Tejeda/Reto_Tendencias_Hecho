@@ -8,7 +8,7 @@ body:
         "tipo_combustible": "Gasolina Regular",
         "capacidad_maxima": 8000,
         "nivel_critico": 1000,
-        "id_estacion": 1
+        "id_estacion": 2
     }
 auth:
   type: bearer

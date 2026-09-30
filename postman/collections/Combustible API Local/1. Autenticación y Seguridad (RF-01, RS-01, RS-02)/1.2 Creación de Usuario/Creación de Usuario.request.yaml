@@ -5,12 +5,12 @@ body:
   type: json
   content: |-
     {
-        "rol": "Solicitante",
+        "rol": "Administrador",
         "data": {
-            "correo": "Solicitante@email.com",
-            "password": "Solicitante",
-            "name": "Nombre Solicitante",
-            "id_empleado": "1"
+            "correo": "ffrederf3@gmail.com",
+            "password": "Administrador",
+            "name": "Frederick Tejeda",
+            "id_empleado": "9"
         }
     }
 order: 1790177270915

@@ -4,10 +4,10 @@ method: POST
 body:
   type: json
   content: |-
-    // {     
-    //     "correo": "Supervisor@email.com",     
-    //     "password": "Supervisor" 
-    // }
+    {     
+        "correo": "Supervisor@email.com",     
+        "password": "Supervisor" 
+    }
 
     // {     
     //     "correo": "Solicitante@email.com",     
@@ -24,10 +24,15 @@ body:
     //     "password": "Auditor" 
     // }
 
-    {     
-        "correo": "Despachador@email.com",     
-        "password": "Despachador" 
-    }
+    // {     
+    //     "correo": "Despachador@email.com",     
+    //     "password": "Despachador" 
+    // }
+
+    // {     
+    //     "correo": "ffrederf3@gmail.com",     
+    //     "password": "Administrador" 
+    // }
 scripts:
   - type: afterResponse
     code: |-

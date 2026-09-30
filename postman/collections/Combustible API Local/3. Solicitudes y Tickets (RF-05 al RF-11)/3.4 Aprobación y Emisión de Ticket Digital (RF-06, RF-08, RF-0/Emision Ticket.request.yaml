@@ -3,7 +3,7 @@ url: "{{base_url}}/tickets/issue"
 method: POST
 body:
   type: json
-  content: '{ "requestId": 11, "approvedBy": 2 }'
+  content: '{ "requestId": 14, "approvedBy": 2 }'
 auth:
   type: bearer
   credentials:

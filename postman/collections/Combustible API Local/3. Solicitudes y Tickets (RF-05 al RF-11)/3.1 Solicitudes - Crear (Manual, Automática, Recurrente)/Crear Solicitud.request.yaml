@@ -22,10 +22,10 @@ body:
     // }
 
     {
-        "employeeId": 8,
+        "employeeId": 9,
         "vehicleId": 1,
         "departmentId": 1,
-        "authorizedQuantityGal": 35,
+        "authorizedQuantityGal": 50,
         "fuelType": "Gasoil",
         "requestDate": "2026-09-13T10:00:00Z",
         "expirationDate": "2026-10-15T23:59:59Z"

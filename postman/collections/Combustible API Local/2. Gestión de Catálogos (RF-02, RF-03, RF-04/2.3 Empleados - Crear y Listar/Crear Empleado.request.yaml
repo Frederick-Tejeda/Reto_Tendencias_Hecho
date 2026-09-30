@@ -5,13 +5,13 @@ body:
   type: json
   content: |-
     {
-        "employeeCode": "EMP-1030",
-        "fullName": "Ana Montero",
-        "identificationCard": "402-5237567-9",
+        "employeeCode": "EMP-1040",
+        "fullName": "Frederick Tejeda",
+        "identificationCard": "402-1480995-2",
         "departmentId": 1,
-        "position": "Desarrollador Frontend",
-        "email": "ana.montero@institucion.edu.do",
-        "mobilePhone": "8093510159",
+        "position": "Desarrollador FullStack",
+        "email": "ffrederf3@gmail.com",
+        "mobilePhone": "8092684160",
         "status": "Activo"
     }
 auth:

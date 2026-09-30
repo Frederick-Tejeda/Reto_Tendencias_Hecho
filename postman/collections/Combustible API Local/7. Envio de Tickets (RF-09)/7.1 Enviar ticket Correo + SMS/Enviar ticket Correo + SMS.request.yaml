@@ -1,5 +1,5 @@
 $kind: http-request
-url: "{{base_url}}/send/ticket"
+url: "{{base_url}}/send/ticket/c6912239-bfdc-4dae-abf8-097ba1d2f972"
 method: POST
 body:
   type: json
