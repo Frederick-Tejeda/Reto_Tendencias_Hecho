@@ -8,7 +8,7 @@ const login = async (req, res) => {
     try {
         // 1. Buscar al usuario en la base de datos
         const result = await db.query(
-            'SELECT id_usuario, correo, password_hash, rol, id_empleado, id_estacion, mfa_required estado FROM usuarios WHERE correo = $1',
+            'SELECT id_usuario, correo, password_hash, rol, id_empleado, id_estacion, mfa_required, estado FROM usuarios WHERE correo = $1',
             [correo]
         );
 
