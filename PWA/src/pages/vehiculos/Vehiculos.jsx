@@ -310,6 +310,24 @@ function Vehiculos() {
   }
 
   const validarFormulario = () => {
+    // El backend documenta para PUT únicamente odómetro y estado.
+    // Conservamos todos los campos visibles del RF-03, pero al editar
+    // validamos solamente los valores que la API permite actualizar.
+    if (vehiculoEditando) {
+      if (
+        formulario.odometerKm === '' ||
+        Number(formulario.odometerKm) < 0
+      ) {
+        return 'El odómetro no puede ser negativo.'
+      }
+
+      if (!formulario.status) {
+        return 'El estado es obligatorio.'
+      }
+
+      return ''
+    }
+
     if (!formulario.licensePlate.trim()) {
       return 'La placa es obligatoria.'
     }
@@ -377,21 +395,30 @@ function Vehiculos() {
       La lectura de /vehicles ya fue validada contra la API real.
       La escritura POST/PUT todavía no se prueba con datos ficticios.
     */
-    const payload = {
-      licensePlate: formulario.licensePlate.trim(),
-      internalCode: formulario.internalCode.trim(),
-      brand: formulario.brand.trim(),
-      model: formulario.model.trim(),
-      year: Number(formulario.year),
-      type: formulario.type.trim(),
-      departmentId: Number(formulario.departmentId),
-      tankCapacityGal: Number(formulario.tankCapacityGal),
-      odometerKm: Number(formulario.odometerKm),
-      status: (formulario.status.toLowerCase() == 'Activo') ? true : false,
-    }
+    const esEdicion = Boolean(vehiculoEditando)
+
+    // Conservamos el formulario completo exigido por RF-03.
+    // Para crear se envía el registro completo; para editar usamos
+    // exactamente los campos documentados por PUT /vehicles/:id.
+    const payload = esEdicion
+      ? {
+          odometerKm: Number(formulario.odometerKm),
+          status: formulario.status,
+        }
+      : {
+          licensePlate: formulario.licensePlate.trim(),
+          internalCode: formulario.internalCode.trim(),
+          brand: formulario.brand.trim(),
+          model: formulario.model.trim(),
+          year: Number(formulario.year),
+          type: formulario.type.trim(),
+          departmentId: Number(formulario.departmentId),
+          tankCapacityGal: Number(formulario.tankCapacityGal),
+          odometerKm: Number(formulario.odometerKm),
+          status: formulario.status,
+        }
 
     try {
-      const esEdicion = Boolean(vehiculoEditando)
 
       const url = esEdicion
         ? `${API_BASE_URL}/vehicles/${vehiculoEditando.id}`
@@ -467,10 +494,15 @@ function Vehiculos() {
       obtenerEstado(vehiculo).toLowerCase() === 'activo'
   ).length
 
-  const Inactivo = vehiculos.filter(
-    (vehiculo) =>
-      obtenerEstado(vehiculo).toLowerCase() === 'inactivo'
-  ).length
+  const enReparacion = vehiculos.filter((vehiculo) => {
+    const estado = obtenerEstado(vehiculo).toLowerCase()
+
+    return (
+      estado.includes('reparación') ||
+      estado.includes('reparacion') ||
+      estado.includes('mantenimiento')
+    )
+  }).length
 
   return (
     <AdminLayout>
@@ -544,11 +576,11 @@ function Vehiculos() {
 
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
             <p className="text-sm text-slate-500">
-              Inactivos
+              En reparación / mantenimiento
             </p>
 
             <p className="text-3xl font-bold text-amber-600 mt-2">
-              {cargando ? '-' : Inactivo}
+              {cargando ? '-' : enReparacion}
             </p>
           </div>
         </div>
@@ -815,9 +847,10 @@ function Vehiculos() {
 
               {vehiculoEditando && (
                 <div className="mb-5 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm">
-                  El listado actual de la API no devuelve todos los
-                  detalles del vehículo. Verifica los campos antes de
-                  guardar una edición.
+                  El formulario conserva todos los datos definidos en RF-03.
+                  El endpoint de edición actualiza únicamente el odómetro y
+                  el estado; los demás campos se muestran con la información
+                  disponible en el listado de la API.
                 </div>
               )}
 
@@ -1002,6 +1035,10 @@ function Vehiculos() {
 
                     <option value="Inactivo">
                       Inactivo
+                    </option>
+
+                    <option value="En Reparación">
+                      En Reparación
                     </option>
                   </select>
                 </div>

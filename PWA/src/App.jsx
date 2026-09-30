@@ -12,11 +12,12 @@ import Empleados from './pages/empleados/Empleados'
 import Vehiculos from './pages/vehiculos/Vehiculos'
 import Departamentos from './pages/departamentos/Departamentos'
 import Solicitudes from './pages/solicitudes/Solicitudes'
+import Tickets from './pages/tickets/Tickets'
 import Recepcion from './pages/recepcion/Recepcion'
 import Reportes from './pages/reportes/Reportes'
 import Auditoria from './pages/auditoria/Auditoria'
 import CierreDiario from './pages/cierre-diario/CierreDiario'
-
+import InstallApp from './components/DownloadApp'
 import EscaneoQR from './pages/Movil/EscaneoQR'
 import ValidacionTicket from './pages/Movil/ValidacionTicket'
 import RegistroDespacho from './pages/Movil/RegistroDespacho'
@@ -30,8 +31,12 @@ export const API_BASE_URL =
 function App() {
   return (
     <BrowserRouter>
+    <InstallApp />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
 
         <Route path="/login" element={<Login />} />
 
@@ -39,7 +44,9 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['Administrador', 'Auditor']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador', 'Auditor']}
+            >
               <Dashboard />
             </ProtectedRoute>
           }
@@ -49,7 +56,9 @@ function App() {
         <Route
           path="/usuarios"
           element={
-            <ProtectedRoute allowedRoles={['Administrador']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador']}
+            >
               <Usuarios />
             </ProtectedRoute>
           }
@@ -59,7 +68,9 @@ function App() {
         <Route
           path="/empleados"
           element={
-            <ProtectedRoute allowedRoles={['Administrador']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador']}
+            >
               <Empleados />
             </ProtectedRoute>
           }
@@ -69,7 +80,9 @@ function App() {
         <Route
           path="/vehiculos"
           element={
-            <ProtectedRoute allowedRoles={['Administrador']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador']}
+            >
               <Vehiculos />
             </ProtectedRoute>
           }
@@ -79,7 +92,9 @@ function App() {
         <Route
           path="/departamentos"
           element={
-            <ProtectedRoute allowedRoles={['Administrador']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador']}
+            >
               <Departamentos />
             </ProtectedRoute>
           }
@@ -101,12 +116,27 @@ function App() {
           }
         />
 
+        {/* Gestión web de Tickets - Supervisor */}
+        <Route
+          path="/tickets"
+          element={
+            <ProtectedRoute
+              allowedRoles={['Supervisor']}
+            >
+              <Tickets />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Recepción de combustible */}
         <Route
           path="/recepcion"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador', 'Supervisor']}
+              allowedRoles={[
+                'Administrador',
+                'Supervisor',
+              ]}
             >
               <Recepcion />
             </ProtectedRoute>
@@ -117,24 +147,21 @@ function App() {
         <Route
           path="/reportes"
           element={
-            <ProtectedRoute allowedRoles={['Administrador', 'Auditor']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador', 'Auditor']}
+            >
               <Reportes />
             </ProtectedRoute>
           }
         />
 
-        {/*
-          Auditoría / trazabilidad.
-
-          El backend actualmente registra información de auditoría,
-          pero todavía no expone un endpoint para consultar esos
-          registros. Se conserva la pantalla para mostrar correctamente
-          que la funcionalidad de lectura está pendiente de backend.
-        */}
+        {/* Auditoría / trazabilidad */}
         <Route
           path="/auditoria"
           element={
-            <ProtectedRoute allowedRoles={['Administrador', 'Auditor']}>
+            <ProtectedRoute
+              allowedRoles={['Administrador', 'Auditor']}
+            >
               <Auditoria />
             </ProtectedRoute>
           }
@@ -144,7 +171,9 @@ function App() {
         <Route
           path="/cierre-diario"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute
+              allowedRoles={['Despachador']}
+            >
               <CierreDiario />
             </ProtectedRoute>
           }
@@ -154,16 +183,28 @@ function App() {
         <Route
           path="/escanear"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute
+              allowedRoles={['Despachador']}
+            >
               <EscaneoQR />
             </ProtectedRoute>
           }
         />
 
+       <Route
+          path="/despacho/validar"
+          element={
+            <ProtectedRoute allowedRoles={['Despachador']}>
+              <ValidacionTicket />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/despacho/validar/:qrData"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute
+              allowedRoles={['Despachador']}
+            >
               <ValidacionTicket />
             </ProtectedRoute>
           }
@@ -172,7 +213,9 @@ function App() {
         <Route
           path="/despacho/registrar/:ticketId"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute
+              allowedRoles={['Despachador']}
+            >
               <RegistroDespacho />
             </ProtectedRoute>
           }
@@ -181,13 +224,18 @@ function App() {
         <Route
           path="/despacho/tickets"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute
+              allowedRoles={['Despachador']}
+            >
               <ConsultaTickets />
             </ProtectedRoute>
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to="/login" replace />}
+        />
       </Routes>
     </BrowserRouter>
   )

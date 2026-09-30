@@ -23,7 +23,7 @@ import {
   KeyRound,
 } from 'lucide-react'
 
-import FuelIcon from './../../assets/Icon.jpg'
+import FuelIcon from '/Icon.png'
 import { API_BASE_URL } from '../../App.jsx'
 
 function AdminLayout({ children }) {
@@ -303,6 +303,13 @@ function AdminLayout({ children }) {
       mostrarEnMovil: true,
     },
     {
+      name: 'Tickets',
+      path: '/tickets',
+      icon: Ticket,
+      roles: ['Supervisor'],
+      mostrarEnMovil: false,
+    },
+    {
       name: 'Recepción',
       path: '/recepcion',
       icon: Truck,
@@ -491,7 +498,7 @@ function AdminLayout({ children }) {
       </div>
 
       {esMovil && (
-        <nav className="md:hidden fixed bottom-0 w-full h-16 bg-white border-t border-slate-200 flex items-center justify-around px-2 z-50 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+        <nav className="md:hidden fixed bottom-0 w-full h-16 bg-white border-t border-slate-200 flex items-center justify-around px-2 z-50shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
           {menuItemsPermitidos.map((item) => {
             const Icon = item.icon
 

@@ -186,16 +186,53 @@ function Empleados() {
   const abrirEditarEmpleado = (empleado) => {
     setEmpleadoEditando(empleado)
 
-    /*
-      GET /employees devuelve información resumida.
-      No intentamos inventar cédula, correo, teléfono, etc.
+    const departamentoId =
+      empleado.departmentId ??
+      empleado.department?.id ??
+      empleado.id_department ??
+      empleado.id_departamento ??
+      ''
 
-      Para PUT solamente necesitamos los campos documentados:
-      position y status.
+    /*
+      RF-02 define la ficha completa del empleado.
+      Conservamos todos sus campos visibles al editar.
+
+      GET /employees puede devolver información resumida, por lo que los
+      campos que la API no incluya se mostrarán vacíos en lugar de inventar
+      información.
+
+      El PUT documentado actualmente permite modificar position y status.
+      Por eso los demás campos se muestran como parte de la ficha, pero no
+      se envían al backend hasta que exista soporte documentado para editarlos.
     */
     setFormulario({
-      ...formularioInicial,
-      position: empleado.position || '',
+      employeeCode:
+        empleado.employeeCode ||
+        empleado.code ||
+        '',
+      fullName:
+        empleado.fullName ||
+        empleado.name ||
+        '',
+      identificationCard:
+        empleado.identificationCard ||
+        empleado.identification ||
+        empleado.cedula ||
+        '',
+      departmentId: String(departamentoId),
+      position:
+        empleado.position ||
+        empleado.cargo ||
+        '',
+      email:
+        empleado.email ||
+        empleado.correo ||
+        '',
+      mobilePhone:
+        empleado.mobilePhone ||
+        empleado.phone ||
+        empleado.telefono ||
+        '',
       status: empleado.status || 'Activo',
     })
 
@@ -665,10 +702,104 @@ function Empleados() {
                 {empleadoEditando ? (
                   /*
                     EDICIÓN:
-                    el contrato PUT solamente documenta
-                    position y status.
+                    RF-02 conserva visible la ficha completa del empleado.
+                    El contrato PUT actual solo permite guardar Cargo y Estado;
+                    los demás campos se muestran sin eliminar información de la interfaz.
                   */
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Código del empleado
+                      </label>
+
+                      <input
+                        type="text"
+                        name="employeeCode"
+                        readOnly
+                        value={
+                          formulario.employeeCode
+                        }
+                        onChange={actualizarCampo}
+                        placeholder="Ej. EMP-1031"
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Nombre completo
+                      </label>
+
+                      <input
+                        type="text"
+                        name="fullName"
+                        readOnly
+                        value={formulario.fullName}
+                        onChange={actualizarCampo}
+                        placeholder="Nombre y apellido"
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Cédula / identificación
+                      </label>
+
+                      <input
+                        type="text"
+                        name="identificationCard"
+                        readOnly
+                        value={
+                          formulario.identificationCard
+                        }
+                        onChange={actualizarCampo}
+                        placeholder="Documento de identidad"
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Departamento
+                      </label>
+
+                      <select
+                        name="departmentId"
+                        disabled
+                        value={
+                          formulario.departmentId
+                        }
+                        onChange={actualizarCampo}
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      >
+                        <option value="">
+                          Selecciona un departamento
+                        </option>
+
+                        {departamentos.map(
+                          (departamento) => (
+                            <option
+                              key={
+                                departamento.id
+                              }
+                              value={
+                                departamento.id
+                              }
+                            >
+                              {departamento.code
+                                ? `${departamento.code} - ${departamento.name}`
+                                : departamento.name}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
                         Cargo
@@ -687,6 +818,42 @@ function Empleados() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Correo electrónico
+                      </label>
+
+                      <input
+                        type="email"
+                        name="email"
+                        readOnly
+                        value={formulario.email}
+                        onChange={actualizarCampo}
+                        placeholder="correo@ejemplo.com"
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Teléfono móvil
+                      </label>
+
+                      <input
+                        type="text"
+                        name="mobilePhone"
+                        readOnly
+                        value={
+                          formulario.mobilePhone
+                        }
+                        onChange={actualizarCampo}
+                        placeholder="809-000-0000"
+                        required
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
                         Estado
                       </label>
 
@@ -694,7 +861,6 @@ function Empleados() {
                         name="status"
                         value={formulario.status}
                         onChange={actualizarCampo}
-                        required
                         className="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                       >
                         <option value="Activo">
