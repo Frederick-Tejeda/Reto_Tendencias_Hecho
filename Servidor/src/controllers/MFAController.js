@@ -15,7 +15,7 @@ const generarMFA = async (req, res) => {
         await db.query('UPDATE usuarios SET mfa_secret = $1 WHERE id_usuario = $2', [secret, req.usuario.id_usuario]);
 
         // 4. Crear la URI con formato estándar para aplicaciones como Google Authenticator
-        const appName = 'Gestión Combustible INTEC';
+        const appName = 'FuelPass';
         const otpauth = authenticator.keyuri(userEmail, appName, secret);
 
         // 5. Convertir la URI en una imagen QR en formato Base64

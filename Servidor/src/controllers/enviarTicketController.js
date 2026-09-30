@@ -40,7 +40,7 @@ const enviarTicket = async (req, res) => {
         //     algorithm: 'HS256' 
         // });
 
-        const urlValidacion = `http://localhost:5173/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`;
+        const urlValidacion = `https://reto-tendencias-hecho-v31m.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`;
         
         // 3. Generar la imagen del QR en Base64 a partir del token seguro
         const qrBase64 = await QRCode.toDataURL(urlValidacion);
@@ -48,7 +48,7 @@ const enviarTicket = async (req, res) => {
         // Envío de correo usando Resend (optimizado para Serverless)
         const base64Data = qrBase64.split(';base64,').pop();
         const { data, error } = await resend.emails.send({
-            from: 'Gestión Combustible INTEC <onboarding@resend.dev>', // Cambiar por tu dominio verificado en producción
+            from: 'FuelPass <onboarding@resend.dev>', // Cambiar por tu dominio verificado en producción
             to: destinatarioEmail,
             subject: `Ticket de Combustible Emitido: ${ticketInfo.rows[0].secuencia}`,
             html: `
@@ -81,7 +81,7 @@ const enviarTicket = async (req, res) => {
 
         // Envío de SMS usando Twilio (RF-09)[cite: 1]
         await twilioClient.messages.create({
-            body: `Ticket INTEC ${ticketInfo.rows[0].secuencia}. URL: http://localhost:5173/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`,
+            body: `FuelPass Ticket ${ticketInfo.rows[0].secuencia}. URL: https://reto-tendencias-hecho-v31m.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`,
             from: process.env.TWILIO_PHONE_NUMBER,
             to: `+1${numeroTelefono}`
         })
