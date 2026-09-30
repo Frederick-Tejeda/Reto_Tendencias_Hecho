@@ -49,7 +49,7 @@ function EscaneoQR() {
       const tokenStr = localStorage.getItem('fuelcontrol_token');
       
       // APLICANDO TU ESTRUCTURA DE URL EXACTA CON VARIABLES NUEVAS Y DOBLE (?)
-      const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${ticketUuid}?qrPayloadHash=${qrPayloadHash}`;
+      const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${ticketUuid}&qrPayloadHash=${qrPayloadHash}`;
 
       const response = await fetch(urlValidacion, {
         method: 'POST',

@@ -21,7 +21,7 @@ function ValidacionTicket() {
         const hashDesdeState = location.state?.hash || '';
 
         // APLICANDO TU ESTRUCTURA DE URL EXACTA CON VARIABLES NUEVAS Y DOBLE (?)
-        const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${qrData}?qrPayloadHash=${hashDesdeState}`;
+        const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${qrData}&qrPayloadHash=${hashDesdeState}`;
 
         const response = await fetch(urlValidacion, {
           method: 'POST',
