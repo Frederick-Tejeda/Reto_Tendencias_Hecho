@@ -18,6 +18,8 @@ router.put('/:id', verificarRol(['Administrador']), adminUsersController.modific
 // 1.4 Desactivar Usuario
 router.put('/:id/deactivate', verificarRol(['Administrador']), adminUsersController.desactivarUsuario);
 
+router.put('/:id/activate', verificarRol(['Administrador']), adminUsersController.activarUsuario);
+
 // 1.6 Restablecer Contraseña
 router.post('/:id/reset-password', verificarRol(['Administrador']), adminUsersController.restablecerPassword);
 

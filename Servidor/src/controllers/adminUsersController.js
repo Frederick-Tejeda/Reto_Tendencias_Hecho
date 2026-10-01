@@ -148,11 +148,54 @@ const desactivarUsuario = async (req, res) => {
     try {
         await cliente.query(
             'UPDATE usuarios SET estado = $1 WHERE id_usuario = $2',
-            [isActive, id]
+            [false, id]
         );
 
-        const accionTexto = isActive ? 'activado' : 'desactivado';
-        const accionTextoAuditoria = isActive ? 'ACTIVAR_USUARIO' : 'DESACTIVAR_USUARIO';
+        // const accionTexto = isActive ? 'activado' : 'desactivado';
+        const accionTexto = 'desactivado';
+        // const accionTextoAuditoria = isActive ? 'ACTIVAR_USUARIO' : 'DESACTIVAR_USUARIO';
+        const accionTextoAuditoria = 'DESACTIVAR_USUARIO';
+
+        // Registro de Auditoría
+        await cliente.query(`
+            INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles) 
+            VALUES ($1, $2, 'usuarios', $3)
+        `, [id_usuario_modificador, accionTextoAuditoria, `Usuario ${accionTexto} ID: ${id}. Motivo: ${reason}`]);
+
+        await db.query('COMMIT');       
+
+        res.status(200).json({
+            success: true,
+            message: `Usuario ${accionTexto} satisfactoriamente`
+        });
+    } catch (error) {
+        await cliente.query('ROLLBACK');
+        console.error('Error al desactivar usuario:', error);
+        res.status(500).json({ success: false, message: 'Error interno al cambiar estado del usuario' });
+    } finally {
+        // Liberar el cliente al pool
+        cliente.release();
+    }
+};
+
+// 1.4 Desactivar Usuario
+const activarUsuario = async (req, res) => {
+    const { id } = req.params;
+    const { isActive, reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
+    const id_usuario_modificador = req.usuario.id_usuario;
+
+    const cliente = await db.pool.connect();
+
+    try {
+        await cliente.query(
+            'UPDATE usuarios SET estado = $1 WHERE id_usuario = $2',
+            [true, id]
+        );
+
+        // const accionTexto = isActive ? 'activado' : 'desactivado';
+        const accionTexto = 'activado';
+        // const accionTextoAuditoria = isActive ? 'ACTIVAR_USUARIO' : 'DESACTIVAR_USUARIO';
+        const accionTextoAuditoria = 'ACTIVAR_USUARIO';
 
         // Registro de Auditoría
         await cliente.query(`
@@ -239,5 +282,6 @@ module.exports = {
     modificarUsuario,
     desactivarUsuario,
     listarUsuarios,
-    restablecerPassword
+    restablecerPassword,
+    activarUsuario
 };
