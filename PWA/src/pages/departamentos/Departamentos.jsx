@@ -21,7 +21,7 @@ const formularioInicial = {
   description: '',
 }
 
-const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario").rol;
 
 function Departamentos() {
   const [departamentos, setDepartamentos] = useState([])

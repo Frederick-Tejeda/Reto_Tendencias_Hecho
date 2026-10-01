@@ -17,7 +17,7 @@ import {
 
 import { API_BASE_URL } from '../../App.jsx'
 
-const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario").rol;
 
 function Tickets() {
   const [tickets, setTickets] = useState([])

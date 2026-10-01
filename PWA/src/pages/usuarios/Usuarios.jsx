@@ -35,7 +35,7 @@ const formularioInicial = {
   contrasena: '',
 }
 
-const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario").rol;
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([])
