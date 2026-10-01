@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     basicSsl(),
-   VitePWA({
+    VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['Icon.png', 'hero.png'],
       manifest: {
@@ -21,7 +21,7 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
-       icons: [
+        icons: [
           {
             src: '/Icon.png',
             sizes: '192x192',
@@ -37,7 +37,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg}'],
-        navigateFallback: '/index.html'
+        navigateFallback: '/index.html',
+        // Add these two lines to force the new Service Worker to take over immediately
+        clientsClaim: true,
+        skipWaiting: true
       },
       devOptions: {
         enabled: true,

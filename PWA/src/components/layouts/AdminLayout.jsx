@@ -475,11 +475,10 @@ function AdminLayout({ children }) {
 
             <button
               type="button"
-              onClick={abrirConfiguracionMfa}
+              onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirConfiguracionMfa() } } }
               className="w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-[#2563eb] to-[#22d3ee] text-white flex items-center justify-center shrink-0 shadow-md hover:scale-105 transition-transform"
               aria-label="Abrir configuración de seguridad"
               title="Seguridad / MFA"
-              disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             >
               <UserRound size={esMovil ? 16 : 22} />
             </button>
