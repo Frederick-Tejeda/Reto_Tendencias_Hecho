@@ -89,9 +89,9 @@ function ValidacionTicket() {
         ) : (
           <>
             {esValido ? <CheckCircle size={64} className="text-green-500 mb-4" /> : <XCircle size={64} className="text-red-500 mb-4" />}
-            <h3 className="text-2xl font-bold text-slate-800 mb-1">{ticket?.sequentialId || 'Desconocido'}</h3>
+            <h3 className="text-2xl font-bold text-slate-800 mb-1">{ticket?.ticketUuid || 'Desconocido'}</h3>
             <span className={`text-sm font-bold px-3 py-1 rounded-full uppercase mb-6 ${esValido ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-              {ticket?.status || 'Inválido'}
+              {esValido ? 'Valido' : 'Inválido'}
             </span>
 
             <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4 mb-8">
@@ -99,27 +99,27 @@ function ValidacionTicket() {
                 <div className="bg-slate-100 p-2 rounded-lg"><User size={20} className="text-slate-500" /></div>
                 <div>
                   <p className="text-xs text-slate-400">Empleado</p>
-                  <p className="font-medium">{ticket?.employeeName || 'No especificado'}</p>
+                  <p className="font-medium">{ticket?.employee.name || 'No especificado'}</p>
                 </div>
               </div>
               <div className="flex gap-4 items-center text-slate-700">
                 <div className="bg-slate-100 p-2 rounded-lg"><Car size={20} className="text-slate-500" /></div>
                 <div>
                   <p className="text-xs text-slate-400">Vehículo</p>
-                  <p className="font-medium">{ticket?.vehicleCode || 'No especificado'}</p>
+                  <p className="font-medium">{ticket?.vehicle.internalCode || 'No especificado'}</p>
                 </div>
               </div>
               <div className="flex gap-4 items-center text-slate-700">
                 <div className="bg-blue-50 p-2 rounded-lg"><Fuel size={20} className="text-blue-600" /></div>
                 <div>
                   <p className="text-xs text-slate-400">Autorizado</p>
-                  <p className="font-bold text-blue-700">{ticket?.authorizedQuantityGal || 0} Galones ({ticket?.fuelType || 'N/A'})</p>
+                  <p className="font-bold text-blue-700">{ticket?.dispatchDetails.authorizedQuantityGal || 0} Galones ({ticket?.dispatchDetails.fuelType || 'N/A'})</p>
                 </div>
               </div>
             </div>
 
             {esValido ? (
-              <button onClick={() => navigate(`/despacho/registrar/${ticket.uuid}`, { state: { ticket } })} className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
+              <button onClick={() => navigate(`/despacho/registrar/${ticket.ticketUuid}`, { state: { ticket } })} className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
                 Proceder al Despacho
               </button>
             ) : (
