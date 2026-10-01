@@ -83,9 +83,9 @@ const listarSolicitudes = async (req, res) => {
             JOIN empleados e ON s.id_empleado = e.id_empleado
             JOIN vehiculos v ON s.id_vehiculo = v.id_vehiculo`;
 
-        console.log({rol: resultQuery.rows[0]?.rol, id_empleado})
+        console.log({rol: resultQuery?.rows[0]?.rol, id_empleado})
 
-        if(resultQuery.rows[0]?.rol == "Solicitante" || id_empleado){
+        if(resultQuery?.rows[0]?.rol == "Solicitante" || id_empleado){
             query += ' WHERE s.id_empleado=$1 ORDER BY s.fecha_solicitud DESC';
             params.push(id_empleado)
         }else{
