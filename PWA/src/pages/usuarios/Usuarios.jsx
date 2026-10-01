@@ -641,7 +641,7 @@ function Usuarios() {
 
           <button
             type="button"
-            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirNuevoUsuario } } }
+            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirNuevoUsuario() } } }
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <UserPlus size={20} />
