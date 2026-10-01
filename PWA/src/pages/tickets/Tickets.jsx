@@ -243,6 +243,7 @@ function Tickets() {
     setMensaje('')
 
     try {
+      // Emitir Ticket
       const response = await fetch(
         `${API_BASE_URL}/tickets/issue`,
         {
@@ -267,6 +268,31 @@ function Tickets() {
         throw new Error(
           obtenerMensajeError(
             resultado,
+            'No fue posible emitir el ticket.',
+          ),
+        )
+      }
+
+      // Enviar Ticket
+      const response2 = await fetch(
+        `${API_BASE_URL}/send/ticket/${resultado?.data?.uuid}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      )
+
+      const resultado2 = await response2
+        .json()
+        .catch(() => null)
+
+      if (!response.ok || !resultado2?.success) {
+        throw new Error(
+          obtenerMensajeError(
+            resultado2,
             'No fue posible emitir el ticket.',
           ),
         )
