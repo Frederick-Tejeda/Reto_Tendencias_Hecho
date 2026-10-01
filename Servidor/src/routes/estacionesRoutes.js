@@ -12,7 +12,7 @@ router.use(verificarToken); // Asumiendo que requieres auth para todos
 
 // Rutas base: /api/v1/estaciones
 router.post('/', verificarRol(['Administrador']), crearEstacion);
-router.get('/', verificarRol(['Administrador', 'Supervisor', 'Despachador']), listarEstaciones);
+router.get('/', verificarRol(['Administrador', 'Supervisor', 'Despachador', 'Audiencia']), listarEstaciones);
 router.put('/:id', verificarRol(['Administrador']), actualizarEstacion);
 
 module.exports = router;

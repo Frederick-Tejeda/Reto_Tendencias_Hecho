@@ -7,7 +7,7 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 router.use(verificarToken);
 
 router.post('/issue', verificarRol(['Supervisor']), ticketsController.emitirTicket);
-router.get('/', verificarRol(['Supervisor']), ticketsController.listarTickets);
+router.get('/', verificarRol(['Supervisor', 'Audiencia']), ticketsController.listarTickets);
 router.get('/:idEmpleado', ticketsController.listarTicketPorIdEmpleado);
 router.put('/:uuid/cancel', verificarRol(['Supervisor']), ticketsController.anularTicket);
 

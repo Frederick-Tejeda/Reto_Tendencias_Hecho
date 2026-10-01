@@ -7,6 +7,6 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 router.use(verificarToken);
 
 // GET /api/v1/audit
-router.get('/', verificarRol(['Auditor', 'Administrador']), obtenerAuditoria);
+router.get('/', verificarRol(['Auditor', 'Administrador', 'Audiencia']), obtenerAuditoria);
 
 module.exports = router;

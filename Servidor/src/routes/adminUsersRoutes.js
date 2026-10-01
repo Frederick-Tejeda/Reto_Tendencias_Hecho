@@ -5,21 +5,20 @@ const { verificarToken, verificarRol } = require('../middlewares/authMiddleware'
 
 // Proteger todo el router con autenticación y rol de Administrador
 router.use(verificarToken);
-router.use(verificarRol(['Administrador']));
 
 // 1.2 Creación de Usuario
-router.post('/', adminUsersController.crearUsuario);
+router.post('/', verificarRol(['Administrador']), adminUsersController.crearUsuario);
 
 // 1.5 Listar Usuarios
-router.get('/', adminUsersController.listarUsuarios);
+router.get('/', verificarRol(['Audiencia']), adminUsersController.listarUsuarios);
 
 // 1.3 Modificar Usuario
-router.put('/:id', adminUsersController.modificarUsuario);
+router.put('/:id', verificarRol(['Administrador']), adminUsersController.modificarUsuario);
 
 // 1.4 Desactivar Usuario
-router.put('/:id/deactivate', adminUsersController.desactivarUsuario);
+router.put('/:id/deactivate', verificarRol(['Administrador']), adminUsersController.desactivarUsuario);
 
 // 1.6 Restablecer Contraseña
-router.post('/:id/reset-password', adminUsersController.restablecerPassword);
+router.post('/:id/reset-password', verificarRol(['Administrador']), adminUsersController.restablecerPassword);
 
 module.exports = router;

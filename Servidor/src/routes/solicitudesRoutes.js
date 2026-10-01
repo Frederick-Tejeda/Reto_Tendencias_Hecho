@@ -14,13 +14,13 @@ router.post(
 
 router.get(
     '/', 
-    verificarRol(['Supervisor', 'Administrador', 'Solicitante']), 
+    verificarRol(['Supervisor', 'Administrador', 'Solicitante', 'Audiencia']), 
     solicitudesController.listarSolicitudes
 );
 
 router.get(
     '/pendientes', 
-    verificarRol(['Supervisor']), 
+    verificarRol(['Supervisor', 'Audiencia']), 
     solicitudesController.obtenerSolicitudesPendientes
 );
 
