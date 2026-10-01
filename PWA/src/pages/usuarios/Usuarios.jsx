@@ -35,6 +35,8 @@ const formularioInicial = {
   contrasena: '',
 }
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([])
   const [empleados, setEmpleados] = useState([])
@@ -640,6 +642,7 @@ function Usuarios() {
           <button
             type="button"
             onClick={abrirNuevoUsuario}
+            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <UserPlus size={20} />
@@ -856,6 +859,7 @@ function Usuarios() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             type="button"
+                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                             onClick={() =>
                               abrirEditarUsuario(usuario)
                             }
@@ -867,6 +871,7 @@ function Usuarios() {
 
                           <button
                             type="button"
+                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                             onClick={() =>
                               abrirRestablecerContrasena(
                                 usuario
@@ -880,12 +885,10 @@ function Usuarios() {
 
                           <button
                             type="button"
+                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : (procesando ||
+                              usuario.estado !== 'Activo')}
                             onClick={() =>
                               cambiarEstado(usuario)
-                            }
-                            disabled={
-                              procesando ||
-                              usuario.estado !== 'Activo'
                             }
                             title={
                               usuario.estado === 'Activo'

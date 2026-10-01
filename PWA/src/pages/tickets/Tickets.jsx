@@ -17,6 +17,8 @@ import {
 
 import { API_BASE_URL } from '../../App.jsx'
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Tickets() {
   const [tickets, setTickets] = useState([])
   const [solicitudesPendientes, setSolicitudesPendientes] =
@@ -631,6 +633,7 @@ function Tickets() {
                     <td className="px-5 py-4 text-right">
                       <button
                         type="button"
+                        disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                         onClick={() =>
                           abrirEmision(solicitud)
                         }
@@ -764,6 +767,7 @@ function Tickets() {
                       {puedeAnular(item.status) ? (
                         <button
                           type="button"
+                          disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                           onClick={() =>
                             abrirCancelacion(item)
                           }

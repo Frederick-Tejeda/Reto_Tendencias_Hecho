@@ -25,6 +25,8 @@ const formularioInicial = {
   status: 'Activo',
 }
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Empleados() {
   const [empleados, setEmpleados] = useState([])
   const [departamentos, setDepartamentos] = useState([])
@@ -427,6 +429,7 @@ function Empleados() {
           <button
             type="button"
             onClick={abrirNuevoEmpleado}
+            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <Plus size={20} />
@@ -614,6 +617,7 @@ function Empleados() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             type="button"
+                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                             onClick={() =>
                               abrirEditarEmpleado(
                                 empleado

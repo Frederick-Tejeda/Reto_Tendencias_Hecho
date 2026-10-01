@@ -26,6 +26,8 @@ const formularioInicial = {
   status: 'Activo',
 }
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Vehiculos() {
   const [vehiculos, setVehiculos] = useState([])
   const [departamentos, setDepartamentos] = useState([])
@@ -521,6 +523,7 @@ function Vehiculos() {
           <button
             type="button"
             onClick={abrirNuevoVehiculo}
+            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <Plus size={20} />
@@ -776,6 +779,7 @@ function Vehiculos() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               type="button"
+                              disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                               onClick={() =>
                                 abrirEditarVehiculo(vehiculo)
                               }

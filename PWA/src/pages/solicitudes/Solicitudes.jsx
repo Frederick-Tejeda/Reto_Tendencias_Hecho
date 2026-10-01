@@ -15,6 +15,8 @@ import {
 import AdminLayout from '../../components/layouts/AdminLayout'
 import { API_BASE_URL } from '../../App.jsx'
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Solicitudes() {
   const crearFormularioVacio = () => ({
     tipoSolicitud: 'Manual',
@@ -586,6 +588,7 @@ function Solicitudes() {
 
           <button
             type="button"
+            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             onClick={abrirNuevaSolicitud}
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium transition"
           >

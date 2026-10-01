@@ -21,6 +21,8 @@ const formularioInicial = {
   description: '',
 }
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 function Departamentos() {
   const [departamentos, setDepartamentos] = useState([])
   const [busqueda, setBusqueda] = useState('')
@@ -304,6 +306,7 @@ function Departamentos() {
 
           <button
             type="button"
+            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
             onClick={abrirNuevoDepartamento}
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
@@ -537,6 +540,7 @@ function Departamentos() {
                         <div className="flex justify-end">
                           <button
                             type="button"
+                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
                             onClick={() =>
                               abrirEditarDepartamento(departamento)
                             }

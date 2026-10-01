@@ -16,6 +16,8 @@ import {
 import AdminLayout from '../../components/layouts/AdminLayout'
 import { API_BASE_URL } from '../../App.jsx'
 
+const usuarioLoggeadoRol = localStorage.getItem("fuelcontrol_usuario");
+
 const formularioInicial = {
   stationId: '',
   supplierId: '',
@@ -609,6 +611,7 @@ function Recepcion() {
 
             <button
               type="button"
+              disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
               onClick={abrirNuevaRecepcion}
               className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >

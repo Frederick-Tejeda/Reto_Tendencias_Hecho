@@ -19,13 +19,13 @@ router.post(
 
 router.get(
     '/status', 
-    verificarRol(['Administrador', 'Supervisor', 'Auditor']), 
+    verificarRol(['Administrador', 'Supervisor', 'Auditor', 'Audiencia']), 
     inventarioController.consultarEstadoInventario
 );
 
 router.get(
     '/movements', 
-    verificarRol(['Administrador', 'Supervisor', 'Auditor']), 
+    verificarRol(['Administrador', 'Supervisor', 'Auditor', 'Audiencia']), 
     inventarioController.listarMovimientos
 );
 
