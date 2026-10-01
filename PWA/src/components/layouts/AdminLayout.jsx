@@ -26,7 +26,7 @@ import {
 import FuelIcon from '/Icon.png'
 import { API_BASE_URL } from '../../App.jsx'
 
-const usuarioLoggeadoRol = JSON.parse(localStorage.getItem("fuelcontrol_usuario")).rol;
+const usuarioLoggeadoRol = JSON.parse(localStorage.getItem("fuelcontrol_usuario"))?.rol;
 
 function AdminLayout({ children }) {
   const navigate = useNavigate()
