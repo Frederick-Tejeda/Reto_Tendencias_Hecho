@@ -65,7 +65,7 @@ const listarSolicitudes = async (req, res) => {
 
     try {
 
-        let resultQuery = {};
+        let resultQuery = {rows: []};
 
         if(id_empleado){
             resultQuery = await db.query('SELECT u.rol as rol FROM usuarios u INNER JOIN empleados e ON u.id_empleado = e.id_empleado WHERE e.id_empleado=$1', [id_empleado]);
@@ -83,7 +83,7 @@ const listarSolicitudes = async (req, res) => {
             JOIN empleados e ON s.id_empleado = e.id_empleado
             JOIN vehiculos v ON s.id_vehiculo = v.id_vehiculo`;
 
-        console.log({rol: resultQuery?.rows[0]?.rol, id_empleado})
+        //console.log({rol: resultQuery?.rows[0]?.rol, id_empleado})
 
         if(resultQuery?.rows[0]?.rol == "Solicitante" || id_empleado){
             query += ' WHERE s.id_empleado=$1 ORDER BY s.fecha_solicitud DESC';
