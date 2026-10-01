@@ -641,8 +641,7 @@ function Usuarios() {
 
           <button
             type="button"
-            onClick={abrirNuevoUsuario}
-            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
+            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirNuevoUsuario } } }
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <UserPlus size={20} />
@@ -859,10 +858,7 @@ function Usuarios() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             type="button"
-                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-                            onClick={() =>
-                              abrirEditarUsuario(usuario)
-                            }
+                            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirEditarUsuario(usuario) } } }
                             title="Modificar usuario"
                             className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                           >
@@ -871,12 +867,7 @@ function Usuarios() {
 
                           <button
                             type="button"
-                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-                            onClick={() =>
-                              abrirRestablecerContrasena(
-                                usuario
-                              )
-                            }
+                            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirRestablecerContrasena(usuario) } } }
                             title="Restablecer contraseña"
                             className="p-2 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
                           >
@@ -885,11 +876,8 @@ function Usuarios() {
 
                           <button
                             type="button"
-                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : (procesando ||
-                              usuario.estado !== 'Activo')}
-                            onClick={() =>
-                              cambiarEstado(usuario)
-                            }
+                            disabled={procesando || usuario.estado !== 'Activo'}
+                            onClick={() => { if (usuarioLoggeadoRol !== "Audiencia") { cambiarEstado(usuario) } } }
                             title={
                               usuario.estado === 'Activo'
                                 ? 'Desactivar usuario'

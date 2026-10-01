@@ -633,10 +633,7 @@ function Tickets() {
                     <td className="px-5 py-4 text-right">
                       <button
                         type="button"
-                        disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-                        onClick={() =>
-                          abrirEmision(solicitud)
-                        }
+                        onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirEmision(solicitud) } } }
                         className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
                       >
                         <PlusCircle size={17} />
@@ -767,10 +764,7 @@ function Tickets() {
                       {puedeAnular(item.status) ? (
                         <button
                           type="button"
-                          disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-                          onClick={() =>
-                            abrirCancelacion(item)
-                          }
+                          onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirCancelacion(item) } } }
                           className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 text-red-700 hover:bg-red-50 text-sm font-semibold transition-colors"
                         >
                           <XCircle size={17} />

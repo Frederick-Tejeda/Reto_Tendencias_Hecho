@@ -611,8 +611,7 @@ function Recepcion() {
 
             <button
               type="button"
-              disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-              onClick={abrirNuevaRecepcion}
+              onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirNuevaRecepcion() } } }
               className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus size={20} />

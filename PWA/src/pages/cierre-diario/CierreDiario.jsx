@@ -306,8 +306,7 @@ function CierreDiario() {
               <div className="mt-7">
                 <button
                   type="button"
-                  disabled={usuarioLoggeadoRol == "Audiencia" ? true : generando || !fechaCierre}
-                  onClick={generarCierreDiario}
+                  onClick={() => { if(usuarioLoggeadoRol !== "Audiencia"){ generarCierreDiario() } }}
                   className={`inline-flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-colors ${
                     generando || !fechaCierre
                       ? 'bg-slate-200 text-slate-500 cursor-not-allowed'

@@ -306,8 +306,7 @@ function Departamentos() {
 
           <button
             type="button"
-            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-            onClick={abrirNuevoDepartamento}
+            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia"){ abrirNuevoDepartamento() } } }
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-colors"
           >
             <Plus size={20} />
@@ -540,9 +539,7 @@ function Departamentos() {
                         <div className="flex justify-end">
                           <button
                             type="button"
-                            disabled={usuarioLoggeadoRol == "Audiencia" ? true : false}
-                            onClick={() =>
-                              abrirEditarDepartamento(departamento)
+                            onClick={() => { if(usuarioLoggeadoRol !== "Audiencia") { abrirEditarDepartamento(departamento) } }
                             }
                             title="Editar departamento"
                             className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
