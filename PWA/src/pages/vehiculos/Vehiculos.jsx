@@ -685,7 +685,10 @@ function Vehiculos() {
                     </td>
                   </tr>
                 ) : (
-                  vehiculosFiltrados.map((vehiculo) => {
+                  vehiculosFiltrados.map((vehiculo, key) => {
+
+                    console.log({key, vehiculo})
+
                     const marca =
                       vehiculo.brand ||
                       vehiculo.make ||
