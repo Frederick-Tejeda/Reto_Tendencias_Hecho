@@ -40,7 +40,7 @@ const enviarTicket = async (req, res) => {
         //     algorithm: 'HS256' 
         // });
 
-        const urlValidacion = `https://reto-tendencias-hecho.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`;
+        const urlValidacion = `https://reto-tendencias-hecho.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}&qrhash=${ticketInfo.rows[0].qr_hash}`;
         
         // 3. Generar la imagen del QR en Base64 a partir del token seguro
         const qrBase64 = await QRCode.toDataURL(urlValidacion);
@@ -81,7 +81,7 @@ const enviarTicket = async (req, res) => {
 
         // Envío de SMS usando Twilio (RF-09)[cite: 1]
         await twilioClient.messages.create({
-            body: `FuelPass Ticket ${ticketInfo.rows[0].secuencia}. URL: https://reto-tendencias-hecho.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}?qrhash=${ticketInfo.rows[0].qr_hash}`,
+            body: `FuelPass Ticket ${ticketInfo.rows[0].secuencia}. URL: https://reto-tendencias-hecho.vercel.app/despacho/validar?token=${ticketInfo.rows[0].id_ticket}&qrhash=${ticketInfo.rows[0].qr_hash}`,
             from: process.env.TWILIO_PHONE_NUMBER,
             to: `+1${numeroTelefono}`
         })
