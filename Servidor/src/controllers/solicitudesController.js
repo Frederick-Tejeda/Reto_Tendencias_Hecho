@@ -84,9 +84,9 @@ const listarSolicitudes = async (req, res) => {
                 s.cantidad_autorizada AS "authorizedQuantityGal",
                 s.tipo_combustible AS "fuelType",
                 s.fecha_solicitud AS "requestDate",
-                s.fecha_vencimiento AS "expirationDate".
+                s.fecha_vencimiento AS "expirationDate",
                 s.tipo_solicitud AS "requestType",
-                s.frecuencia.
+                s.frecuencia,
                 s.dia_semana,
                 s.fecha_inicio_recurrencia,
                 s.fecha_fin_recurrencia,
