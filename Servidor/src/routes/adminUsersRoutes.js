@@ -10,7 +10,7 @@ router.use(verificarToken);
 router.post('/', verificarRol(['Administrador']), adminUsersController.crearUsuario);
 
 // 1.5 Listar Usuarios
-router.get('/', verificarRol(['Audiencia']), adminUsersController.listarUsuarios);
+router.get('/', verificarRol(['Administrador', 'Audiencia']), adminUsersController.listarUsuarios);
 
 // 1.3 Modificar Usuario
 router.put('/:id', verificarRol(['Administrador']), adminUsersController.modificarUsuario);
