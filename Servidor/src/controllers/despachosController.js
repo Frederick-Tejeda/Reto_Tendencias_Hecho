@@ -138,6 +138,7 @@ const validarTicketQR = async (req, res) => {
             data: {
                 ticketUuid: ticket.id_ticket,
                 status: ticket.estado,
+                qrPayloadHash,
                 employee: {
                     name: ticket.empleado,
                     idCard: ticket.cedula

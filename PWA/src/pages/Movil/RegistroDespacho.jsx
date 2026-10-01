@@ -33,8 +33,8 @@ function RegistroDespacho() {
   
   const ticketValido =
     ticket &&
-    ticket.uuid === ticketId &&
-    ticket.status === 'Pendiente';
+    ticket.ticketUuid === ticketId &&
+    ticket.status === 'Enviado';
 
   const confirmarDespacho = async (e) => {
     e.preventDefault();
@@ -68,7 +68,7 @@ function RegistroDespacho() {
 
       
       const payload = {
-        ticketUuid: ticket.uuid,
+        ticketUuid: ticket.ticketUuid,
         qrPayloadHash: ticket.qrPayloadHash || "e3b0c442...", 
         dispatcherId: parseInt(dispatcherId, 10),
         stationId: parseInt(estacionId, 10),
