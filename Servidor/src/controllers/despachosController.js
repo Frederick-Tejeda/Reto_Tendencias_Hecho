@@ -137,6 +137,7 @@ const validarTicketQR = async (req, res) => {
             message: 'Ticket válido y listo para despacho.',
             data: {
                 ticketUuid: ticket.id_ticket,
+                status: ticket.estado,
                 employee: {
                     name: ticket.empleado,
                     idCard: ticket.cedula
