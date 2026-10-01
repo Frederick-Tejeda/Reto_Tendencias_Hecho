@@ -39,6 +39,9 @@ function Login() {
 
       case 'Despachador':
         return '/cierre-diario'
+      
+      case 'Audiencia':
+        return '/dashboard'
 
       default:
         return null
