@@ -65,8 +65,10 @@ const listarSolicitudes = async (req, res) => {
 
     try {
 
+        let resultQuery = {};
+
         if(id_empleado){
-            const resultQuery = await db.query('SELECT u.rol as rol FROM usuarios u INNER JOIN empleados e ON u.id_empleado = e.id_empleado WHERE e.id_empleado=$1', [id_empleado]);
+            resultQuery = await db.query('SELECT u.rol as rol FROM usuarios u INNER JOIN empleados e ON u.id_empleado = e.id_empleado WHERE e.id_empleado=$1', [id_empleado]);
             if(resultQuery.rows.length == 0 && rol !== "Audiencia") res.status(400).json({success: false, message: "Revisa el id_empleado provisto"})   
         }
 
