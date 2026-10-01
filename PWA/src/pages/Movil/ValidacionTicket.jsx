@@ -7,6 +7,9 @@ function ValidacionTicket() {
   const navigate = useNavigate();
   const { qrData } = useParams(); 
   const location = useLocation();
+  const parametros = new URLSearchParams(location.search);
+  const token = parametros.get('token') || parametros.get('ticketUuid');
+  const qrhash = parametros.get('qrhash') || parametros.get('qrPayloadHash');
   
   const [ticket, setTicket] = useState(location.state?.ticket || null);
   const [cargando, setCargando] = useState(!location.state?.ticket);
@@ -21,7 +24,7 @@ function ValidacionTicket() {
         const hashDesdeState = location.state?.hash || '';
 
         // APLICANDO TU ESTRUCTURA DE URL EXACTA CON VARIABLES NUEVAS Y DOBLE (?)
-        const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${qrData}&qrPayloadHash=${hashDesdeState}`;
+        const urlValidacion = `${API_BASE_URL}/dispatch/validate?ticketUuid=${token}&qrPayloadHash=${qrhash}`;
 
         const response = await fetch(urlValidacion, {
           method: 'POST',
