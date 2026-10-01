@@ -140,7 +140,7 @@ const modificarUsuario = async (req, res) => {
 // 1.4 Desactivar Usuario
 const desactivarUsuario = async (req, res) => {
     const { id } = req.params;
-    const { isActive, reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
+    const { reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
     const id_usuario_modificador = req.usuario.id_usuario;
 
     const cliente = await db.pool.connect();
@@ -181,7 +181,7 @@ const desactivarUsuario = async (req, res) => {
 // 1.4 Desactivar Usuario
 const activarUsuario = async (req, res) => {
     const { id } = req.params;
-    const { isActive, reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
+    const { reason } = req.body; // reason se puede guardar en una tabla de logs si es necesario
     const id_usuario_modificador = req.usuario.id_usuario;
 
     const cliente = await db.pool.connect();
