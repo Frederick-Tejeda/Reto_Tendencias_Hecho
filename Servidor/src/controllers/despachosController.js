@@ -85,6 +85,8 @@ const registrarDespacho = async (req, res) => {
 const validarTicketQR = async (req, res) => {
     const { ticketUuid, qrPayloadHash } = req.query;
 
+    console.log({ ticketUuid, qrPayloadHash })
+
     if(!ticketUuid || !qrPayloadHash) res.status(400).json({success: false, message: "Falta el token o el hash"});
 
     try {
