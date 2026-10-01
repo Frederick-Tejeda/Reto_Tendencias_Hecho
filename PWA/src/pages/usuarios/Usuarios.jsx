@@ -322,7 +322,7 @@ function Usuarios() {
     const correo = formulario.correo.trim().toLowerCase()
     const idEmpleado = formulario.idEmpleado
       ? String(formulario.idEmpleado)
-      : ''
+      : null
 
     const esEdicion = Boolean(usuarioEditando)
 
