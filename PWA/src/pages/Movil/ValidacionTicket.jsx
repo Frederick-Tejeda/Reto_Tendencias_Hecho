@@ -65,7 +65,7 @@ function ValidacionTicket() {
     );
   }
 
-  const esValido = ticket?.status === 'Pendiente';
+  const esValido = ticket?.status === 'Enviado';
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
