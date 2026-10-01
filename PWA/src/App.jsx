@@ -45,7 +45,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador', 'Auditor']}
+              allowedRoles={['Administrador', 'Auditor', 'Audiencia']}
             >
               <Dashboard />
             </ProtectedRoute>
@@ -57,7 +57,7 @@ function App() {
           path="/usuarios"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador']}
+              allowedRoles={['Administrador', 'Audiencia']}
             >
               <Usuarios />
             </ProtectedRoute>
@@ -69,7 +69,7 @@ function App() {
           path="/empleados"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador']}
+              allowedRoles={['Administrador', 'Audiencia']}
             >
               <Empleados />
             </ProtectedRoute>
@@ -81,7 +81,7 @@ function App() {
           path="/vehiculos"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador']}
+              allowedRoles={['Administrador', 'Audiencia']}
             >
               <Vehiculos />
             </ProtectedRoute>
@@ -93,7 +93,7 @@ function App() {
           path="/departamentos"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador']}
+              allowedRoles={['Administrador', 'Audiencia']}
             >
               <Departamentos />
             </ProtectedRoute>
@@ -109,6 +109,7 @@ function App() {
                 'Administrador',
                 'Supervisor',
                 'Solicitante',
+                'Audiencia'
               ]}
             >
               <Solicitudes />
@@ -121,7 +122,7 @@ function App() {
           path="/tickets"
           element={
             <ProtectedRoute
-              allowedRoles={['Supervisor']}
+              allowedRoles={['Supervisor', 'Audiencia']}
             >
               <Tickets />
             </ProtectedRoute>
@@ -136,6 +137,7 @@ function App() {
               allowedRoles={[
                 'Administrador',
                 'Supervisor',
+                'Audiencia'
               ]}
             >
               <Recepcion />
@@ -148,7 +150,7 @@ function App() {
           path="/reportes"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador', 'Auditor']}
+              allowedRoles={['Administrador', 'Auditor', 'Audiencia']}
             >
               <Reportes />
             </ProtectedRoute>
@@ -160,7 +162,7 @@ function App() {
           path="/auditoria"
           element={
             <ProtectedRoute
-              allowedRoles={['Administrador', 'Auditor']}
+              allowedRoles={['Administrador', 'Auditor', 'Audiencia']}
             >
               <Auditoria />
             </ProtectedRoute>
@@ -172,7 +174,7 @@ function App() {
           path="/cierre-diario"
           element={
             <ProtectedRoute
-              allowedRoles={['Despachador']}
+              allowedRoles={['Despachador', 'Audiencia']}
             >
               <CierreDiario />
             </ProtectedRoute>
@@ -184,7 +186,7 @@ function App() {
           path="/escanear"
           element={
             <ProtectedRoute
-              allowedRoles={['Despachador']}
+              allowedRoles={['Despachador', 'Audiencia']}
             >
               <EscaneoQR />
             </ProtectedRoute>
@@ -194,7 +196,7 @@ function App() {
        <Route
           path="/despacho/validar"
           element={
-            <ProtectedRoute allowedRoles={['Despachador']}>
+            <ProtectedRoute allowedRoles={['Despachador', 'Audiencia']}>
               <ValidacionTicket />
             </ProtectedRoute>
           }
@@ -203,7 +205,7 @@ function App() {
           path="/despacho/validar/:qrData"
           element={
             <ProtectedRoute
-              allowedRoles={['Despachador']}
+              allowedRoles={['Despachador', 'Audiencia']}
             >
               <ValidacionTicket />
             </ProtectedRoute>
@@ -214,7 +216,7 @@ function App() {
           path="/despacho/registrar/:ticketId"
           element={
             <ProtectedRoute
-              allowedRoles={['Despachador']}
+              allowedRoles={['Despachador', 'Audiencia']}
             >
               <RegistroDespacho />
             </ProtectedRoute>
@@ -225,7 +227,7 @@ function App() {
           path="/despacho/tickets"
           element={
             <ProtectedRoute
-              allowedRoles={['Despachador']}
+              allowedRoles={['Despachador', 'Audiencia']}
             >
               <ConsultaTickets />
             </ProtectedRoute>
