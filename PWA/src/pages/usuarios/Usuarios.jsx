@@ -24,6 +24,7 @@ const ROLES = [
   'Despachador',
   'Solicitante',
   'Auditor',
+  'Audiencia',
 ]
 
 const formularioInicial = {
