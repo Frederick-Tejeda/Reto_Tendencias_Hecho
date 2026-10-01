@@ -65,6 +65,8 @@ function ValidacionTicket() {
     );
   }
 
+  console.log({ticket})
+
   const esValido = ticket?.status === 'Enviado';
 
   return (
