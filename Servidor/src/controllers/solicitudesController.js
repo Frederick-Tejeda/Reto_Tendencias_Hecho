@@ -74,10 +74,23 @@ const listarSolicitudes = async (req, res) => {
 
         let query = `
             SELECT 
-                s.id_solicitud AS "requestId", 
+                s.id_solicitud AS "requestId",
+                s.id_empleado AS "employeeId",
+                v.id_vehiculo AS "vehicleId", 
                 e.nombre_completo AS "employeeName", 
                 v.ficha_interna AS "vehicleCode", 
-                s.fecha_solicitud AS "requestDate", 
+                s.id_departamento AS "departmentId",
+                s.fecha_solicitud AS "requestDate",
+                s.cantidad_autorizada AS "authorizedQuantityGal",
+                s.tipo_combustible AS "fuelType",
+                s.fecha_solicitud AS "requestDate",
+                s.fecha_vencimiento AS "expirationDate".
+                s.tipo_solicitud AS "requestType",
+                s.frecuencia.
+                s.dia_semana,
+                s.fecha_inicio_recurrencia,
+                s.fecha_fin_recurrencia,
+                s.id_usuario_solicitante,
                 s.estado AS "status"
             FROM solicitudes s
             JOIN empleados e ON s.id_empleado = e.id_empleado
