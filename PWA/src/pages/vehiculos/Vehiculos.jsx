@@ -199,6 +199,7 @@ function Vehiculos() {
         vehiculo.model,
         vehiculo.type,
         vehiculo.vehicleType,
+        vehiculo.odometerKm,
         obtenerNombreDepartamento(vehiculo),
         obtenerEstado(vehiculo),
       ]

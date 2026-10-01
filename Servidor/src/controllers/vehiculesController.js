@@ -26,7 +26,7 @@ const listarVehiculos = async (req, res) => {
                 v.anio as year,
                 v.tipo as type,
                 d.id_departamento as department,
-                v.capacidad_tanque as tanque,
+                v.capacidad_tanque as tankCapacity,
                 v.kilometros as odometerKm,
                 v.estado as status
             FROM vehiculos v
