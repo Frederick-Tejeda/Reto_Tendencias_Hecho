@@ -10,7 +10,7 @@ const crearUsuario = async (req, res) => {
     const id_empleadoInt = Number(id_empleado);
     const id_estacionInt = Number(id_estacion);
 
-    const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante']
+    const rolesPermitidos = ['Administrador', 'Supervisor', 'Despachador', 'Auditor', 'Solicitante', 'Audiencia']
 
     if(!rolesPermitidos.includes(rol)) res.status(400).json({ success: false, message: 'Error al crear el usuario. Verifica que el rol sea correcto.' })
     
