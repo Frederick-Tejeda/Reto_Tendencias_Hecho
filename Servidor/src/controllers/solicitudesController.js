@@ -83,7 +83,7 @@ const listarSolicitudes = async (req, res) => {
 
         console.log({rol: resultQuery.rows[0]?.rol, id_empleado})
 
-        if(resultQuery.rows[0]?.rol == "Solicitante"){
+        if(resultQuery.rows[0]?.rol == "Solicitante" || id_empleado){
             query += ' WHERE s.id_empleado=$1 ORDER BY s.fecha_solicitud DESC';
             params.push(id_empleado)
         }else{
