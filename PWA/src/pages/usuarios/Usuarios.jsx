@@ -336,12 +336,12 @@ function Usuarios() {
       return
     }
 
-    if (!idEmpleado) {
-      setError(
-        'Debes seleccionar el empleado asociado a la cuenta.'
-      )
-      return
-    }
+    // if (!idEmpleado) {
+    //   setError(
+    //     'Debes seleccionar el empleado asociado a la cuenta.'
+    //   )
+    //   return
+    // }
 
     if (!esEdicion && !nombre) {
       setError('El nombre del usuario es obligatorio.')
