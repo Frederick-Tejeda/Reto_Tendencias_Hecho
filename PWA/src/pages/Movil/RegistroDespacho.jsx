@@ -52,9 +52,9 @@ function RegistroDespacho() {
       return;
     }
 
-    if (cantidad > (ticket?.dispatchDetails.authorizedQuantityGal || 0)) {
+    if (cantidad > (ticket?.dispatchDetails.authorizedGallons || 0)) {
       setError(
-        `La cantidad no puede superar los ${ticket?.dispatchDetails.authorizedQuantityGal} galones autorizados.`
+        `La cantidad no puede superar los ${ticket?.dispatchDetails.authorizedGallons} galones autorizados.`
       );
       return;
     }
@@ -220,7 +220,7 @@ function RegistroDespacho() {
                 <div>
                   <p className="text-sm text-blue-700">Cantidad autorizada</p>
                   <p className="text-2xl font-bold text-blue-800">
-                    {ticket?.dispatchDetails.authorizedQuantityGal} gal
+                    {ticket?.dispatchDetails.authorizedGallons} gal
                   </p>
                 </div>
                 <div className="text-right">
@@ -253,7 +253,7 @@ function RegistroDespacho() {
                   id="galones"
                   type="number"
                   min="0.01"
-                  max={ticket?.dispatchDetails.authorizedQuantityGal}
+                  max={ticket?.dispatchDetails.authorizedGallons}
                   step="any"
                   inputMode="decimal"
                   required

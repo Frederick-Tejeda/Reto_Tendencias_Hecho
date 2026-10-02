@@ -115,7 +115,7 @@ function ValidacionTicket() {
                 <div className="bg-blue-50 p-2 rounded-lg"><Fuel size={20} className="text-blue-600" /></div>
                 <div>
                   <p className="text-xs text-slate-400">Autorizado</p>
-                  <p className="font-bold text-blue-700">{ticket?.dispatchDetails.authorizedQuantityGal || 0} Galones ({ticket?.dispatchDetails.fuelType || 'N/A'})</p>
+                  <p className="font-bold text-blue-700">{ticket?.dispatchDetails.authorizedGallons || 0} Galones ({ticket?.dispatchDetails.fuelType || 'N/A'})</p>
                 </div>
               </div>
             </div>
