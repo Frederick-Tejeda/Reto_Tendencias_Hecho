@@ -17,8 +17,11 @@ function RegistroDespacho() {
   const location = useLocation();
   const { ticketId } = useParams(); 
 
+  console.log({ticketId})
+
   
   const ticket = location.state?.ticket;
+  console.log({ticket})
 
   // Datos introducidos por el despachador
   const [galonesServidos, setGalonesServidos] = useState('');
@@ -35,6 +38,8 @@ function RegistroDespacho() {
     ticket &&
     ticket.ticketUuid === ticketId &&
     ticket.status === 'Enviado';
+   
+  console.log({ticketValido})
 
   const confirmarDespacho = async (e) => {
     e.preventDefault();
@@ -76,6 +81,8 @@ function RegistroDespacho() {
         dispatchTimestamp: new Date().toISOString(),
         observations: observaciones
       };
+
+      console.log({payload})
 
       const response = await fetch(`${API_BASE_URL}/dispatch`, {
         method: 'POST',
