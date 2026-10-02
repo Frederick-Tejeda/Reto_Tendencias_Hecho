@@ -52,9 +52,9 @@ function RegistroDespacho() {
       return;
     }
 
-    if (cantidad > (ticket.authorizedQuantityGal || 0)) {
+    if (cantidad > (ticket?.dispatchDetails.authorizedQuantityGal || 0)) {
       setError(
-        `La cantidad no puede superar los ${ticket.authorizedQuantityGal} galones autorizados.`
+        `La cantidad no puede superar los ${ticket?.dispatchDetails.authorizedQuantityGal} galones autorizados.`
       );
       return;
     }
@@ -197,14 +197,14 @@ function RegistroDespacho() {
 
               <div>
                 <p className="text-xs text-slate-500">Número de ticket</p>
-                <p className="font-bold text-slate-800">{ticket.sequentialId}</p>
+                <p className="font-bold text-slate-800">{ticket.ticketUuid}</p>
               </div>
 
               <div className="flex items-center gap-3">
                 <User size={20} className="text-slate-400" />
                 <div>
                   <p className="text-xs text-slate-500">Empleado</p>
-                  <p className="font-medium text-slate-800">{ticket.employeeName || 'No asignado'}</p>
+                  <p className="font-medium text-slate-800">{ticket?.employee.name || 'No asignado'}</p>
                 </div>
               </div>
 
@@ -212,7 +212,7 @@ function RegistroDespacho() {
                 <Car size={20} className="text-slate-400" />
                 <div>
                   <p className="text-xs text-slate-500">Vehículo</p>
-                  <p className="font-medium text-slate-800">{ticket.vehicleCode || 'No asignado'}</p>
+                  <p className="font-medium text-slate-800">{ticket?.vehicle.internalCode || 'No asignado'}</p>
                 </div>
               </div>
 
@@ -220,7 +220,7 @@ function RegistroDespacho() {
                 <div>
                   <p className="text-sm text-blue-700">Cantidad autorizada</p>
                   <p className="text-2xl font-bold text-blue-800">
-                    {ticket.authorizedQuantityGal} gal
+                    {ticket?.dispatchDetails.authorizedQuantityGal} gal
                   </p>
                 </div>
                 <div className="text-right">
@@ -253,7 +253,7 @@ function RegistroDespacho() {
                   id="galones"
                   type="number"
                   min="0.01"
-                  max={ticket.authorizedQuantityGal}
+                  max={ticket?.dispatchDetails.authorizedQuantityGal}
                   step="any"
                   inputMode="decimal"
                   required
@@ -280,9 +280,8 @@ function RegistroDespacho() {
                   onChange={(e) => setEstacionId(e.target.value)}
                   className="w-full border border-slate-300 rounded-xl p-4 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
-                  <option value="">Seleccionar estación</option>
-                  <option value="1">Estación Principal INTEC</option>
-                  <option value="2">Estación Secundaria</option>
+                  <option value="1">Estación Av Venezuela</option>
+                  <option value="2">Estación Av San Vicente</option>
                 </select>
               </div>
 
