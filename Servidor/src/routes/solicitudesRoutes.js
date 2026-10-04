@@ -20,7 +20,7 @@ router.get(
 
 router.get(
     '/pendientes', 
-    verificarRol(['Supervisor', 'Audiencia']), 
+    verificarRol(['Supervisor', 'Audiencia', 'Solicitante']), 
     solicitudesController.obtenerSolicitudesPendientes
 );
 
