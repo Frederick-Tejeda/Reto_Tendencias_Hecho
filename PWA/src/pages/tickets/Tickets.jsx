@@ -25,7 +25,7 @@ function Tickets() {
   const [solicitudesPendientes, setSolicitudesPendientes] =
     useState([])
 
-  //const [cargando, setCargando] = useState(true)
+  const [cargando, setCargando] = useState(true)
   const [procesando, setProcesando] = useState(false)
 
   const [error, setError] = useState('')
