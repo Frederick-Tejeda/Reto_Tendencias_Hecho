@@ -14,23 +14,7 @@ const crearSolicitud = async (req, res) => {
         recurrence 
     } = req.body;    
 
-    const usuarioAuth = req.usuario; 
-    const id_usuario_creador = usuarioAuth.id_usuario;
-
-    // Beneficiary resolution
-    let id_empleado_beneficiario;
-    if (usuarioAuth.rol === 'Solicitante') {
-        if (!usuarioAuth.id_empleado) {
-            return res.status(403).json({ success: false, message: 'Tu cuenta no está vinculada a un perfil de empleado.' });
-        }
-        id_empleado_beneficiario = usuarioAuth.id_empleado;
-    } else {
-        id_empleado_beneficiario = employeeId;
-    }
-    
-    if (!id_empleado_beneficiario) {
-        return res.status(400).json({ success: false, message: 'Debe especificar el id_empleado beneficiario.' });
-    }
+    const id_usuario_creador = req.usuario.id_usuario;
 
     // Date validation
     const d1 = new Date(requestDate);
@@ -48,7 +32,7 @@ const crearSolicitud = async (req, res) => {
         await cliente.query(`
             CALL crear_solicitud_combustible($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `, [
-            id_empleado_beneficiario, 
+            employeeId, 
             vehicleId, 
             departmentId, 
             authorizedQuantityGal, 
