@@ -122,7 +122,7 @@ function App() {
           path="/tickets"
           element={
             <ProtectedRoute
-              allowedRoles={['Supervisor', 'Audiencia']}
+              allowedRoles={['Supervisor', 'Audiencia', 'Solicitante']}
             >
               <Tickets />
             </ProtectedRoute>
