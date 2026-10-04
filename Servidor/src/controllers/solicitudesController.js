@@ -26,9 +26,10 @@ const crearSolicitud = async (req, res) => {
         id_empleado_beneficiario = usuarioAuth.id_empleado;
     } else {
         id_empleado_beneficiario = employeeId;
-        if (!id_empleado_beneficiario) {
-            return res.status(400).json({ success: false, message: 'Debe especificar el id_empleado beneficiario.' });
-        }
+    }
+    
+    if (!id_empleado_beneficiario) {
+        return res.status(400).json({ success: false, message: 'Debe especificar el id_empleado beneficiario.' });
     }
 
     // Date validation

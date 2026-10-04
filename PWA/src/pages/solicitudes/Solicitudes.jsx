@@ -430,7 +430,7 @@ function Solicitudes() {
       ),
     }
 
-    if (formulario.tipoSolicitud === 'Recurrente') {
+    if (formulario.tipoSolicitud != 'Manual') {
       payload.recurrence = {
         frequency: formulario.frecuencia,
         dayOfWeek: Number(formulario.diaSemana),
