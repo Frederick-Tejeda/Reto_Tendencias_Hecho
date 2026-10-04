@@ -458,20 +458,20 @@ function Tickets() {
     )
   }
 
-  if (cargando) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <Loader2
-          size={42}
-          className="animate-spin text-blue-600"
-        />
+  // if (cargando) {
+  //   return (
+  //     <div className="min-h-[60vh] flex flex-col items-center justify-center">
+  //       <Loader2
+  //         size={42}
+  //         className="animate-spin text-blue-600"
+  //       />
 
-        <p className="mt-4 text-slate-600 font-medium">
-          Cargando gestión de tickets...
-        </p>
-      </div>
-    )
-  }
+  //       <p className="mt-4 text-slate-600 font-medium">
+  //         Cargando gestión de tickets...
+  //       </p>
+  //     </div>
+  //   )
+  // }
 
   return (
     <AdminLayout>

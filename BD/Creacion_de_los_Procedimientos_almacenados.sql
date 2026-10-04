@@ -280,33 +280,85 @@ END;
 $$;
 
         -- 8. Crear Solicitud de Combustible
-
-CREATE OR REPLACE PROCEDURE crear_solicitud_combustible(
-    p_id_empleado INT,
-    p_id_vehiculo INT,
-    p_id_departamento INT,
-    p_cantidad_autorizada DECIMAL,
-    p_tipo_combustible VARCHAR,
-    p_fecha_vencimiento TIMESTAMP,
-    p_id_usuario_creador INT
+CREATE OR REPLACE PROCEDURE public.crear_solicitud_combustible(
+    IN p_id_empleado integer,
+    IN p_id_vehiculo integer,
+    IN p_id_departamento integer,
+    IN p_cantidad_autorizada numeric,
+    IN p_tipo_combustible character varying,
+    IN p_tipo_solicitud character varying,
+    IN p_fecha_vencimiento timestamp without time zone,
+    IN p_id_usuario_creador integer,
+    IN p_recurrencia jsonb DEFAULT NULL
 )
 LANGUAGE plpgsql
-AS $$
+AS $procedure$
 DECLARE
     v_nueva_solicitud INT;
+    v_tipo_solicitud  VARCHAR(30) := COALESCE(NULLIF(p_tipo_solicitud, ''), 'Manual');
+    v_frecuencia      VARCHAR(30) := NULL;
+    v_dia_semana      INTEGER := NULL;
+    v_fecha_inicio    TIMESTAMP := NULL;
+    v_fecha_fin       TIMESTAMP := NULL;
 BEGIN
-    -- 1. Insertar la nueva solicitud en estado por defecto ('Pendiente')
-    INSERT INTO solicitudes (id_empleado, id_vehiculo, id_departamento, cantidad_autorizada, tipo_combustible, fecha_vencimiento)
-    VALUES (p_id_empleado, p_id_vehiculo, p_id_departamento, p_cantidad_autorizada, p_tipo_combustible, p_fecha_vencimiento)
+    -- If recurrence JSON is supplied, parse sub-variables and ensure type reflects it
+    IF p_recurrencia IS NOT NULL AND p_recurrencia <> '{}'::jsonb THEN
+        IF v_tipo_solicitud = 'Manual' THEN
+            v_tipo_solicitud := 'Recurrente';
+        END IF;
+        
+        v_frecuencia   := p_recurrencia->>'frequency';
+        v_dia_semana   := (p_recurrencia->>'dayOfWeek')::INTEGER;
+        v_fecha_inicio := (p_recurrencia->>'startDate')::TIMESTAMP;
+        v_fecha_fin    := (p_recurrencia->>'endDate')::TIMESTAMP;
+    END IF;
+
+    -- Insert into solicitudes
+    INSERT INTO solicitudes (
+        id_empleado,
+        id_vehiculo,
+        id_departamento,
+        cantidad_autorizada,
+        tipo_combustible,
+        tipo_solicitud,
+        fecha_vencimiento,
+        id_usuario_solicitante,
+        frecuencia,
+        dia_semana,
+        fecha_inicio_recurrencia,
+        fecha_fin_recurrencia
+    ) VALUES (
+        p_id_empleado,
+        p_id_vehiculo,
+        p_id_departamento,
+        p_cantidad_autorizada,
+        p_tipo_combustible,
+        v_tipo_solicitud,
+        p_fecha_vencimiento,
+        p_id_usuario_creador,
+        v_frecuencia,
+        v_dia_semana,
+        v_fecha_inicio,
+        v_fecha_fin
+    )
     RETURNING id_solicitud INTO v_nueva_solicitud;
 
-    -- 2. Registrar en la auditoría de trazabilidad
-    INSERT INTO auditoria_trazabilidad (id_usuario, accion, tabla_afectada, detalles)
-    VALUES (p_id_usuario_creador, 'CREAR_SOLICITUD', 'solicitudes', 'Nueva solicitud ID: ' || v_nueva_solicitud || ' - Cantidad: ' || p_cantidad_autorizada);
-    
+    -- Audit log
+    INSERT INTO auditoria_trazabilidad (
+        id_usuario,
+        accion,
+        tabla_afectada,
+        detalles
+    ) VALUES (
+        p_id_usuario_creador,
+        'CREAR_SOLICITUD',
+        'solicitudes',
+        'Nueva solicitud ID: ' || v_nueva_solicitud || ' (Tipo: ' || v_tipo_solicitud || ')'
+    );
+
     COMMIT;
 END;
-$$;
+$procedure$;
 
         -- 9. Rechazar Solicitud
 
