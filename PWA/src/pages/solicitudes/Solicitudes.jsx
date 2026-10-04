@@ -349,6 +349,8 @@ function Solicitudes() {
       ...anterior,
       [name]: value,
     }))
+
+    console.log({ formulario, name, value })
   }
 
   const validarFormulario = () => {
@@ -1127,13 +1129,8 @@ function Solicitudes() {
                     <option value="Gasolina">
                       Gasolina
                     </option>
-
                     <option value="Gasoil">
                       Gasoil
-                    </option>
-
-                    <option value="Diésel">
-                      Diésel
                     </option>
                   </select>
                 </div>
@@ -1151,6 +1148,7 @@ function Solicitudes() {
                     }
                     onChange={manejarCambio}
                     required
+                    disabled
                     className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
