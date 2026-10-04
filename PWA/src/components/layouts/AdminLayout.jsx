@@ -265,7 +265,7 @@ function AdminLayout({ children }) {
       name: 'Tickets',
       path: '/despacho/tickets',
       icon: Ticket,
-      roles: ['Despachador', 'Audiencia', 'Solicitante'],
+      roles: ['Despachador', 'Audiencia'],
       mostrarEnMovil: true,
       soloMovil: true,
     },
@@ -308,7 +308,7 @@ function AdminLayout({ children }) {
       name: 'Tickets',
       path: '/tickets',
       icon: Ticket,
-      roles: ['Supervisor', 'Audiencia'],
+      roles: ['Supervisor', 'Audiencia', 'Solicitante'],
       mostrarEnMovil: false,
     },
     {
