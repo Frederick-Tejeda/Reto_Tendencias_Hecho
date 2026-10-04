@@ -309,6 +309,8 @@ function Solicitudes() {
   const manejarCambio = (e) => {
     const { name, value } = e.target
 
+    console.log({ formulario, name, value })
+
     if (name === 'tipoSolicitud') {
       setFormulario((anterior) => ({
         ...anterior,
@@ -349,8 +351,6 @@ function Solicitudes() {
       ...anterior,
       [name]: value,
     }))
-
-    console.log({ formulario, name, value })
   }
 
   const validarFormulario = () => {
