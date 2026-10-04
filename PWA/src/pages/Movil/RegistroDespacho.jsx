@@ -25,7 +25,7 @@ function RegistroDespacho() {
 
   // Datos introducidos por el despachador
   const [galonesServidos, setGalonesServidos] = useState('');
-  const [estacionId, setEstacionId] = useState(''); 
+  const [estacionId, setEstacionId] = useState(null); 
   const [observaciones, setObservaciones] = useState('');
 
   const [error, setError] = useState('');
@@ -280,6 +280,7 @@ function RegistroDespacho() {
                   onChange={(e) => setEstacionId(e.target.value)}
                   className="w-full border border-slate-300 rounded-xl p-4 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
+                  <option value={null}>Seleccionar estación</option>
                   <option value="1">Estación Av Venezuela</option>
                   <option value="2">Estación Av San Vicente</option>
                 </select>
